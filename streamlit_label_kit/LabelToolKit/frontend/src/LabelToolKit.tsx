@@ -1,0 +1,25 @@
+import {
+  withStreamlitConnection,
+  ComponentProps
+} from "streamlit-component-lib"
+import React from "react"
+import { PythonArgs } from './utils'
+import { Detection, Classification } from './label-tool'
+
+const LabelToolKit = ({ args, theme }: ComponentProps) => {
+  const {
+    label_type,
+  }: PythonArgs = args
+
+  switch(label_type) {
+    case "detection":
+      return (Detection(args));
+    case "classification":
+      return (Classification(args));
+    default:
+      return null;
+  }
+}
+
+
+export default withStreamlitConnection(LabelToolKit)
