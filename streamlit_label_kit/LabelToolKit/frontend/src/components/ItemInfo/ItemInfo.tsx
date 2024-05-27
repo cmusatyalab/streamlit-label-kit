@@ -2,22 +2,11 @@ import React, {useCallback} from "react"
 
 import { BaseComponentProps } from '../../utils/BaseComponent';
 import Paper from '@mui/material/Paper';
-
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
-import ClearIcon from '@mui/icons-material/Clear';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-
-import ListItemButton from '@mui/material/ListItemButton';
-import IconButton from '@mui/material/IconButton';
 import {BaseItem} from '../../utils'
 import Box from '@mui/material/Box';
 import {ValueDisplay} from '../ValueDisplay';
 import {Tag} from '../Tag';
+import {Description} from '../Description'
 
 
 interface ItemInfoProps extends BaseComponentProps {
@@ -26,6 +15,7 @@ interface ItemInfoProps extends BaseComponentProps {
   items?: BaseItem[];
   displayLabel?: boolean;
   displayMetaData?: boolean;
+  displayDescription?: boolean;
   setItem?: (item: BaseItem) => void;
 } 
 
@@ -36,6 +26,7 @@ export const ItemInfo = ({
   items = [],
   displayLabel = false,
   displayMetaData = false,
+  displayDescription = false,
   edit = false,
   setItem
 }: ItemInfoProps) => {
@@ -50,6 +41,13 @@ export const ItemInfo = ({
   const updateMetaData = useCallback((newMeta: string[]) => {
     if (setItem && item) {
       item.meta = newMeta;
+      setItem(item);
+    }
+  }, [setItem, item]);
+
+  const updateDescription = useCallback((newDescription: string) => {
+    if (setItem && item) {
+      item.meta = [newDescription];
       setItem(item);
     }
   }, [setItem, item]);
@@ -88,7 +86,7 @@ export const ItemInfo = ({
         {displayLabel ? <> 
           <ValueDisplay
             width="100%"
-            label={"label"}
+            label={"Label"}
             value={item?.label}
             paddingLeft={"0.4rem"}
           />
@@ -102,6 +100,15 @@ export const ItemInfo = ({
             disabled={(item === undefined) || !edit}
             metaData={item?.meta}
             setMetaData={updateMetaData}
+          />
+        </> : displayDescription ? <> 
+          <Description
+            width="100%"
+            height={`calc(100% - 24px - ${displayLabel ? '24px' : '0px'})`}
+            disabled={(item === undefined) || !edit}
+            description={item?.meta[0] || undefined}
+            setDescription={updateDescription}
+            paddingLeft={"0.4rem"}
           />
         </> : null}
       </Box>
