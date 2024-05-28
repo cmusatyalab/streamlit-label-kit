@@ -140,12 +140,14 @@ def _calc_size(size):
 
 
 def detection(
+    #read_only
     image_path,
     label_list,
     bboxes=None,
     labels=[],
+    # info_dict=[],
     metaDatas: list[list[str]] = [],
-    bbox_format: Literal["XYWH", "XYXY", "CXYWH", "REL_XYWH", "REL_XYXY"] = "XYWH",
+    bbox_format: Literal["XYWH", "XYXY", "CXYWH", "REL_XYWH", "REL_XYXY", "REL_CXYWH"] = "XYWH",
     image_height=512,
     image_width=512,
     line_width=1.0,
