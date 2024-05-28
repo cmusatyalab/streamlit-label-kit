@@ -144,6 +144,8 @@ def detection(
     label_list,
     bboxes=None,
     labels=[],
+    read_only=False,
+    infoDict={},
     metaDatas: list[list[str]] = [],
     bbox_format: Literal["XYWH", "XYXY", "CXYWH", "REL_XYWH", "REL_XYXY"] = "XYWH",
     image_height=512,
@@ -156,6 +158,7 @@ def detection(
     class_select_type: Literal["select", "radio"] = "select",
     item_editor: bool = True,
     item_selector: bool = True,
+    edit_meta: bool = True,
     edit_description: bool = False,
     ui_size: Literal["small", "medium", "large"] = "small",
     ui_left_size: Union[Literal["small", "medium", "large"], int] = None,
@@ -251,6 +254,7 @@ def detection(
         ui_bottom_size=_bottom_size,
         ui_right_size=_right_size,
         key=key,
+        read_only=read_only,
         label_type="detection",
     )
     

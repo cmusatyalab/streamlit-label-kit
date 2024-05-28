@@ -45,6 +45,7 @@ export const ClassRadio = <Multiple extends boolean = false>({
   label,
   label_list,
   handleChange,
+  disabled = false,
   multi = false as Multiple
 }: ClassRadioProps<Multiple>) => {
   return (
@@ -60,6 +61,7 @@ export const ClassRadio = <Multiple extends boolean = false>({
                   onChange={handleChange}
                   name={name}
                   size="small"
+                  disabled={disabled}
                   sx={{ padding: "5px", paddingLeft: "12px" }}
                 />
               }
@@ -72,10 +74,11 @@ export const ClassRadio = <Multiple extends boolean = false>({
         <RadioGroup
           row={!vertical}
           value={typeof label === 'string' ? label : ''}
-          onChange={handleChange}
+          onChange={ handleChange}
         >
           {label_list.map((name, index) => (
             <FormControlLabel
+              disabled = {disabled}
               key={index}
               value={name}
               control={<Radio size="small" sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}

@@ -37,6 +37,8 @@ export const Detection = (args: PythonArgs) => {
     ui_right_size = 0,  
     edit_description = false,
     edit_meta = false,
+    read_only = false,
+    info_dict = []
   }: CommmonArgs & DetectionArgs & DevArgs = args
 
   const UI_WIDTH = ui_width;
@@ -275,6 +277,7 @@ export const Detection = (args: PythonArgs) => {
             handleChange={handleClassSelectorChange}
             title="Current Class"
             marginTop={marginTop}
+            disabled={read_only}
         /> : 
         <Box
           sx={{
@@ -298,6 +301,7 @@ export const Detection = (args: PythonArgs) => {
               label_list={label_list}
               handleChange={handleClassSelectorChange}
               multi={false}
+              disabled={read_only}
           />
         </Box>
     );
@@ -310,7 +314,7 @@ export const Detection = (args: PythonArgs) => {
         height={`${height}px`}
         item={selectedId != null && selectedItem ? selectedItem : undefined}
         items={rectangles}
-        edit
+        edit = {!read_only}
         displayLabel
         displayMetaData = {edit_meta}
         displayDescription = {!edit_meta && edit_description}
@@ -325,7 +329,7 @@ export const Detection = (args: PythonArgs) => {
         height={`${height}px`}
         items={rectangles}
         selectedId={selectedId}
-        controlMode="delete"
+        controlMode={read_only ? "none" : "delete"}
         colorMap={color_map}
         handleSecondary={handleDelete}
         handleSelect={updateSelected}
@@ -394,6 +398,7 @@ export const Detection = (args: PythonArgs) => {
             image={image}
             image_size={image_size}
             strokeWidth={line_width}
+            readOnly={read_only}
           />
           {class_select_position === "bottom" ? <ClassSelectRender marginTop={"10px !important"} width={image_size[0] * scale}/> : undefined}
         </Stack>

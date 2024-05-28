@@ -36,6 +36,7 @@ export const Classification = ( args : PythonArgs) => {
     edit_description = false,
     ui_width = "100%",
     ui_height,
+    read_only = false,
   }: CommmonArgs & ClassificationArgs = args
 
   let left_width: number = 0;
@@ -174,7 +175,7 @@ export const Classification = ( args : PythonArgs) => {
             width="100%"
             height={`${height}px`}
             label="Meta Data"
-            disabled={false} 
+            disabled={read_only} 
             metaData={meta}
             setMetaData={updateMeta}
           />
@@ -184,7 +185,7 @@ export const Classification = ( args : PythonArgs) => {
           <Description
             width="100%"
             height={`${height}px`}
-            disabled={false} 
+            disabled={read_only} 
             description={meta[0]} 
             setDescription={updateDescription}
             paddingLeft={"0.4rem"}
@@ -220,6 +221,7 @@ export const Classification = ( args : PythonArgs) => {
             handleChange={multi ? handleChangeMulti : handleChange}
             // marginTop={marginTop}
             multi={multi}
+            disabled={read_only}
         /> 
       </Box>
       :
@@ -245,6 +247,7 @@ export const Classification = ( args : PythonArgs) => {
               label_list={label_list}
               handleChange={multi ? handleChangeCheckBox : handleChange}
               multi={multi}
+              disabled={read_only}
           />
         </Box>
     );
