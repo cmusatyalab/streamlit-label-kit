@@ -65,7 +65,7 @@ export const Classification = ( args : PythonArgs) => {
         }
         break;
       case "bottom":
-        bottom_height = class_select_type === "select" ?  _CLASS_SELECT_HEIGHT + 4: ui_bottom_size + _SPACE;
+        bottom_height = class_select_type === "select" ?  _CLASS_SELECT_HEIGHT + 4 + _SPACE: ui_bottom_size + _SPACE;
         break;
     }
   }
@@ -164,7 +164,7 @@ export const Classification = ( args : PythonArgs) => {
     resizeCanvas()
   }, [image_size])
 
-  let buttom_ui_width: number | string = image_size[0] !== 0 ? image_size[0] * scale : UI_WIDTH;
+  let buttom_ui_width: number | string = image_size[0] !== 0 ? image_size[0] * scale : UI_WIDTH ;
 
   const ElementEditorRender = ({ height }: { height: number }) => {
     return (
@@ -197,15 +197,32 @@ export const Classification = ( args : PythonArgs) => {
   const ClassSelectRender = ({ marginTop, multi, width = "calc(100%)"}: { marginTop?: number | string, multi: boolean, width?: number|string}) => {
     return (
       class_select_type === "select" ? 
+      <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'start',
+            flexWrap: 'wrap',
+            listStyle: 'none',
+            padding: '0px',
+            width: width,
+            height:`${_CLASS_SELECT_HEIGHT + 4}px`,
+            overflowY: "auto",
+            overflowX: "clip",
+            m: 0,
+            p: 0
+          }}
+        >
         <ClassSelect
             width={width}
             height="auto"
             label={multi ? labels : label}
             label_list={label_list}
             handleChange={multi ? handleChangeMulti : handleChange}
-            marginTop={marginTop}
+            // marginTop={marginTop}
             multi={multi}
-        /> :
+        /> 
+      </Box>
+      :
         <Box
           sx={{
             display: 'flex',

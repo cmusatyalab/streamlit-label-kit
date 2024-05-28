@@ -50,8 +50,8 @@ def annotation(
     image_path: str = None,
     label_list: list[str] = [],
     default_label_index: int=None,
-    height: int=512,
-    width: int=512,
+    image_height: int=512,
+    image_width: int=512,
     
     classification: bool = False,
     multi_select: bool = False,
@@ -69,14 +69,14 @@ def annotation(
     ui_bottom_size: Union[Literal["small", "medium", "large"], int] = None,
     ui_right_size: Union[Literal["small", "medium", "large"], int] = None,
     
-    fill_width: bool = False,
+    ui_bottom_fill_width: bool = False,
     ui_height: int = None,
     
     key=None,
 ) -> CustomComponent:
     if (image_path):
         image = Image.open(image_path)
-        image.thumbnail(size=(width, height))
+        image.thumbnail(size=(image_width, image_height))
     
     if (not classification and not meta_editor):
         return None
@@ -116,8 +116,8 @@ def annotation(
             _default_label_list = []
     
     
-    if fill_width:
-        _ui_width = "100%"
+    if ui_bottom_fill_width:
+        _ui_width = "100vw"
         
     if ui_height:
         _ui_height = ui_height

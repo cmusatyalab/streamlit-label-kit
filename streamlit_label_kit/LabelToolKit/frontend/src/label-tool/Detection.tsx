@@ -264,11 +264,11 @@ export const Detection = (args: PythonArgs) => {
     }
   }, [setSelectedId, updateRectangle, rectangles, selectedId]);
 
-  const ClassSelectRender = ({ marginTop }: { marginTop?: number | string }) => {
+  const ClassSelectRender = ({ marginTop, width = "calc(100%)" }: { marginTop?: number | string , width?: number|string }) => {
     return (
       class_select_type === "select" ? 
         <ClassSelect
-            width="calc(100%)"
+            width={width}
             height="calc(100%)"
             label={label}
             label_list={label_list}
@@ -283,7 +283,7 @@ export const Detection = (args: PythonArgs) => {
             flexWrap: 'wrap',
             listStyle: 'none',
             padding: '0px',
-            width: "calc(100%)",
+            width: width,
             maxHeight: `${radio_ui_height}px`,
             overflowY: "auto",
             overflowX: "clip",
@@ -395,8 +395,7 @@ export const Detection = (args: PythonArgs) => {
             image_size={image_size}
             strokeWidth={line_width}
           />
-
-          {class_select_position === "bottom" ? <ClassSelectRender marginTop={"10px !important"} /> : undefined}
+          {class_select_position === "bottom" ? <ClassSelectRender marginTop={"10px !important"} width={image_size[0] * scale}/> : undefined}
         </Stack>
 
         {(right_width !== 0) ? <RenderUi pos={"right"}/> : undefined}
