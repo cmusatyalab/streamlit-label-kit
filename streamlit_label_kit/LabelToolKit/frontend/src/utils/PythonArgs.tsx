@@ -23,11 +23,11 @@ export type PythonArgs = CommmonArgs & DetectionArgs & ClassificationArgs & DevA
 export interface CommmonArgs {
   image_url: string,
   image_size: number[],
-  ui_width: number | string,
-  ui_height: number,
+  // ui_width?: number | string,
+  // ui_height?: number,
   label_list?: string[],
 
-  label_type: "annotation" | "detection"
+  label_type: "annotation" | "detection" | "segmentation"
 };
 
 export interface DevArgs {
@@ -51,6 +51,9 @@ export interface DetectionArgs {
 }
 
 export interface ClassificationArgs {
+  ui_width: number | string,
+  ui_height: number,
+
   default_label_idx?: number,
   vertical_layout?: boolean,
   multi_select?: boolean,

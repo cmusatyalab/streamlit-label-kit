@@ -8,7 +8,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import useImage from 'use-image';
-import { BBoxCanvas, ItemList, ClassSelect, ItemInfo, ClassRadio } from '../components';
+import { BBoxCanvas, ItemList, ClassSelect, ItemInfo, ClassRadio, MaskCanvas} from '../components';
 import { BaseItem, Rectangle, PythonArgs } from '../utils'
 import { CommmonArgs, DetectionArgs, DevArgs } from "../utils";
 import { PassThrough } from "stream";
@@ -16,7 +16,7 @@ import { PassThrough } from "stream";
 const _CLASS_SELECT_HEIGHT = 41 + 6;
 const _SPACE = 8;
 
-export const Detection = (args: PythonArgs) => {
+export const Segmentation = (args: PythonArgs) => {
   const {
     image_url,
     image_size,
@@ -371,7 +371,7 @@ export const Detection = (args: PythonArgs) => {
           spacing={`${_SPACE}px`}
           sx={{ px: "0px" }}
         >
-          <BBoxCanvas
+          {/* <BBoxCanvas
             rectangles={rectangles}
             mode={mode}
             selectedId={selectedId}
@@ -384,6 +384,13 @@ export const Detection = (args: PythonArgs) => {
             image={image}
             image_size={image_size}
             strokeWidth={line_width}
+          /> */}
+          <MaskCanvas
+            image_url={baseUrl + image_url}
+            scale={scale}
+            setMasks={(mask: any[])=>{return}}
+            color_map={color_map}
+            label={label}
           />
           {class_select_position === "bottom" ? <ClassSelectRender marginTop={"10px !important"} width={image_size[0] * scale}/> : undefined}
         </Stack>

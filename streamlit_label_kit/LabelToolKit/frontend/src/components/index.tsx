@@ -1,5 +1,6 @@
 export {BBox} from './BBox'
 export {BBoxCanvas} from './BBoxCanvas'
+export {MaskCanvas} from './MaskCanvas'
 export {ClassRadio, ClassSelect} from './ClassSelection'
 export {ItemList} from './ItemList'
 export {ItemInfo} from './ItemInfo'

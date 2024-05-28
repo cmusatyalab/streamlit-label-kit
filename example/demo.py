@@ -1,9 +1,9 @@
 import streamlit as st
 from glob import glob
 import pandas as pd
-from streamlit_label_kit import detection, annotation
+from streamlit_label_kit import detection, annotation, segmentation
 
-mode = st.tabs(["Detection", "Classification"])
+mode = st.tabs(["Detection", "Classification", "Segmentation"])
 label_list = ["deer", "human", "dog", "penguin", "framingo", "teddy bear"]
 image_path_list = glob("image/*.jpg")
 
@@ -271,4 +271,145 @@ with mode[1]: # Classification
         ui_height = {_ui_height},
         
         key=None,
+    )''', language="python")
+
+with mode[2]:
+    
+    if "result" not in st.session_state:
+        result_dict = {}
+        for img in image_path_list:
+            # # XYWH format
+            # result_dict[img] = {
+            #     "bboxes": [[0, 0, 200, 100], [10, 20, 100, 150]],
+            #     "labels": [0, 0],
+            # }
+            
+            # # REL_XYWH format
+            # result_dict[img] = {
+            #     "bboxes": [
+            #         [0 / image_size[0], 0 / image_size[1], 200 / image_size[0], 100 / image_size[1]], 
+            #         [10 /image_size[0], 20 / image_size[1], 100 / image_size[0], 150 / image_size[1]]
+            #         ],
+            #     "labels": [0, 0],
+            # }
+            
+            # # XYXY format
+            # result_dict[img] = {
+            #     "bboxes": [[0, 0, 200, 100], [10, 20, 110, 170]],
+            #     "labels": [0, 0],
+            # }
+            
+            # # REL_XYXY format
+            result_dict[img] = {
+                "bboxes": [
+                    [0 / image_size[0], 0 / image_size[1], 200 / image_size[0], 100 / image_size[1]], 
+                    [10 /image_size[0], 20 / image_size[1], 110 / image_size[0], 170 / image_size[1]]
+                    ],
+                "labels": [0, 0],
+            }
+        st.session_state["result"] = result_dict.copy()
+
+    num_page = st.slider("page", 0, len(image_path_list) - 1, 1, key="slider_seg")
+    target_image_path = image_path_list[num_page]
+    
+    with st.expander("Size & Label List"):
+        c1, c2, = st.columns(2)
+        with c1: _height = st.number_input("image_height (px)", min_value=0, value=512, key="image_height_seg")
+        with c2: _width = st.number_input("image_width (px)", min_value=0, value=512, key="image_width_seg")
+        
+        _label_list = st.multiselect("Lable List", options=label_list, default=label_list, key="label_list_seg")
+        
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_size = st.selectbox("ui_size", ("small", "medium", "large"), key="ui_size_seg")
+    
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_left_size = st.selectbox("ui_left_size", (None, "small", "medium", "large", "custom"), key="ui_left_size_seg")
+        if _ui_left_size == "custom":
+            with c2: _ui_left_size = st.number_input("left_size (px)", min_value=0, value=198, key="left_size_seg")
+        
+        
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_bottom_size = st.selectbox("ui_bottom_size", (None, "small", "medium", "large", "custom"), key="ui_bottom_size_seg")
+        if _ui_bottom_size == "custom":
+            with c2: _ui_bottom_size = st.number_input("bottom_size (px)", min_value=0, value=198, key="bottom_size_seg")
+            
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_right_size = st.selectbox("ui_right_size", (None, "small", "medium", "large", "custom"), key="ui_right_size_seg")
+        if _ui_right_size == "custom":
+            with c2: _ui_right_size = st.number_input("right_size (px)", min_value=0, value=34, key="right_size_seg")
+    
+    with st.expander("UI Setting & Position"):                
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_position = _item_editor_position = st.selectbox("ui_position", ("left", "right"), key="ui_position_seg")
+        with c2: _line_width = st.number_input("line_width", min_value=0.5, value=1.0, step=0.1, key="line_width_seg")
+    
+    
+        c1, c2, c3 = st.columns(3)
+        with c1: _class_select_type = st.selectbox("class_select_type", ("select", "radio"), key="class_select_seg")
+        with c2: _class_select_position = st.selectbox("class_select_position", (None, "left", "right", "bottom"), key="class_select_position_seg")
+    
+        c1, c2, c3 = st.columns(3)
+        with c1: _item_editor = st.toggle("item_editor", True, "item_editor_seg")
+        if _item_editor:
+            with c2: _item_editor_position = st.selectbox("item_editor_position", (None, "left", "right"), key="item_editor_pos_seg")
+            with c3: _edit_description = st.toggle("edit_description", key="edit_description_seg")
+        else:
+            _item_editor_position = None
+            _edit_description = False
+            
+        c1, c2, c3 = st.columns(3)
+        with c1: _item_selector = st.toggle("item_selector", True, key="item_selector_seg")
+        if _item_selector:
+            with c2: _item_selector_position = st.selectbox("item_selector_position", (None, "left", "right"), key="item_selector_pos_seg")
+        else:
+            _item_selector_position = None
+    
+    st.session_state.out = segmentation(
+        image_path=target_image_path,
+        bboxes=st.session_state["result"][target_image_path]["bboxes"],
+        bbox_format="REL_XYXY",
+        labels=st.session_state["result"][target_image_path]["labels"],
+        label_list=_label_list,
+        line_width=_line_width,
+        class_select_type=_class_select_type,
+        item_editor=_item_editor,
+        item_selector=_item_selector,
+        edit_description=_edit_description,
+        ui_position=_ui_position,
+        class_select_position=_class_select_position,
+        item_editor_position=_item_editor_position,
+        item_selector_position=_item_selector_position,
+        image_height=_height,
+        image_width=_width,
+        ui_size=_ui_size,
+        ui_left_size=_ui_left_size,
+        ui_bottom_size=_ui_bottom_size,
+        ui_right_size=_ui_right_size,
+    )
+    st.session_state.out
+    
+    with st.expander("api"):
+        st.code(f'''result = detection(
+        image_path=image_path,
+        label_list={_label_list},
+        bboxes={st.session_state["result"][target_image_path]["bboxes"]},
+        bbox_format='REL_XYXY'
+        labels={st.session_state["result"][target_image_path]["labels"]},
+        metaDatas=[],
+        height={_height},
+        width={_width},
+        line_width={_line_width},
+        ui_position={repr(_ui_position)},
+        class_select_position={repr(_class_select_position)},
+        item_editor_position={repr(_item_editor_position)},
+        item_selector_position={repr(_item_selector_position)},
+        class_select_type={repr(_class_select_type)},
+        item_editor={_item_editor},
+        item_selector={_item_selector},
+        edit_description={_edit_description},
+        ui_size={repr(_ui_position)},
+        ui_left_size={repr(_ui_left_size)},
+        ui_bottom_size={repr(_ui_bottom_size)},
+        ui_right_size={repr(_ui_right_size)},
+        key=None
     )''', language="python")
