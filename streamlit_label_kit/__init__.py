@@ -1,3 +1,4 @@
 IS_RELEASE = True
 
-from .LabelToolKit import detection, classification
+from .LabelToolKit.detection import detection, convert_bbox_format, absolute_to_relative, relative_to_absolute
+from .LabelToolKit.annotation import annotation

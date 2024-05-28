@@ -25,6 +25,7 @@ const MenuProps = {
 interface ClassSelectProps<Multiple extends boolean> extends BaseComponentProps, ClassSelectorProps<Multiple> {
   title?: string;
   handleChange: (event: SelectChangeEvent<SelectValue<Multiple>>) => void;
+  marginTop?: number | string;
 }
 
 export const ClassSelect = <Multiple extends boolean = false>({
@@ -35,10 +36,11 @@ export const ClassSelect = <Multiple extends boolean = false>({
   handleChange,
   multi = false as Multiple,
   title = multi ? "Select Classes" : "Select Class",
+  marginTop = "6px !important",
 }: ClassSelectProps<Multiple>) => {
 
   return (
-    <FormControl sx={{ width: width, height: height, mt: "6px !important" }} size="small">
+    <FormControl sx={{ width: width, height: height, mt: marginTop}} size="small">
       <InputLabel id="classification-label">{title}</InputLabel>
       <Select
         labelId="classification-label"

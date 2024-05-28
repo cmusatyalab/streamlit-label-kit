@@ -14,9 +14,15 @@ const LabelToolKit = ({ args, theme }: ComponentProps) => {
   switch(label_type) {
     case "detection":
       return (Detection(args));
-    case "classification":
+    case "annotation":
       return (Classification(args));
+
+    // case "tag":
+    //   return (LabelTag(args));
+
+    // "Segmentation"
     default:
+
       return null;
   }
 }

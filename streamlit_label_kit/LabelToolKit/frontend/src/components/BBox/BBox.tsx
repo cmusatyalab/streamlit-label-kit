@@ -19,13 +19,15 @@ export interface BBoxProps {
   onClick: any,
   scale: number,
   strokeWidth: number
+  showLabel?: boolean,
 }
 
 export const BBox = (props: BBoxProps) => {
   const shapeRef = React.useRef<any>();
   const trRef = React.useRef<any>();
   const {
-    rectProps, onChange, isSelected, fill, onClick, scale, strokeWidth
+    rectProps, onChange, isSelected, fill, onClick, scale, strokeWidth,
+    showLabel = true,
   }: BBoxProps = props
   const [moving, setMoving] = useState(false);
 
@@ -39,7 +41,7 @@ export const BBox = (props: BBoxProps) => {
 
   return (
     <React.Fragment>
-      {moving || <Text text={rectProps.label} x={rectProps.x * scale + 5} y={rectProps.y * scale + 5} fontSize={15} fill={rectProps.stroke} />}
+      {moving || showLabel && <Text text={rectProps.label} x={rectProps.x * scale + 5} y={rectProps.y * scale + 5} fontSize={15} fill={rectProps.stroke} />}
       <Rect
         onClick={onClick}
         ref={shapeRef}

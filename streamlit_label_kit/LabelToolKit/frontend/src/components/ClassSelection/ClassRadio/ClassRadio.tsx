@@ -50,7 +50,7 @@ export const ClassRadio = <Multiple extends boolean = false>({
   return (
     <FormControl sx={{ width, height}} size="small">
       {multi ? (
-        <FormGroup row={vertical}>
+        <FormGroup row={!vertical}>
           {label_list.map((name, index) => (
             <FormControlLabel
               key={index}
@@ -70,7 +70,7 @@ export const ClassRadio = <Multiple extends boolean = false>({
         </FormGroup>
       ) : (
         <RadioGroup
-          row={vertical}
+          row={!vertical}
           value={typeof label === 'string' ? label : ''}
           onChange={handleChange}
         >

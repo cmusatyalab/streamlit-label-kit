@@ -1,263 +1,274 @@
 import streamlit as st
 from glob import glob
 import pandas as pd
-from streamlit_label_kit import detection, classification
+from streamlit_label_kit import detection, annotation
 
 mode = st.tabs(["Detection", "Classification"])
 label_list = ["deer", "human", "dog", "penguin", "framingo", "teddy bear"]
 image_path_list = glob("image/*.jpg")
 
+image_size = [700, 467]
+
 with mode[0]:
-    if "result_dict_det" not in st.session_state:
+    
+    if "result" not in st.session_state:
         result_dict = {}
         for img in image_path_list:
+            # # XYWH format
+            # result_dict[img] = {
+            #     "bboxes": [[0, 0, 200, 100], [10, 20, 100, 150]],
+            #     "labels": [0, 0],
+            # }
+            
+            # # REL_XYWH format
+            # result_dict[img] = {
+            #     "bboxes": [
+            #         [0 / image_size[0], 0 / image_size[1], 200 / image_size[0], 100 / image_size[1]], 
+            #         [10 /image_size[0], 20 / image_size[1], 100 / image_size[0], 150 / image_size[1]]
+            #         ],
+            #     "labels": [0, 0],
+            # }
+            
+            # # XYXY format
+            # result_dict[img] = {
+            #     "bboxes": [[0, 0, 200, 100], [10, 20, 110, 170]],
+            #     "labels": [0, 0],
+            # }
+            
+            # # REL_XYXY format
             result_dict[img] = {
-                "bboxes": [[0, 0, 200, 100], [10, 20, 100, 150]],
-                "labels": [0, 1],
+                "bboxes": [
+                    [0 / image_size[0], 0 / image_size[1], 200 / image_size[0], 100 / image_size[1]], 
+                    [10 /image_size[0], 20 / image_size[1], 110 / image_size[0], 170 / image_size[1]]
+                    ],
+                "labels": [0, 0],
             }
-        st.session_state["result_dict_det"] = result_dict.copy()
+        st.session_state["result"] = result_dict.copy()
 
     num_page = st.slider("page", 0, len(image_path_list) - 1, 1, key="slider_det")
     target_image_path = image_path_list[num_page]
-
-    new_labels = detection(
+    
+    with st.expander("Size & Label List"):
+        c1, c2, = st.columns(2)
+        with c1: _height = st.number_input("image_height", min_value=0, value=512)
+        with c2: _width = st.number_input("image_width", min_value=0, value=512)
+        
+        _label_list = st.multiselect("Lable List", options=label_list, default=label_list)
+        
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_size = st.selectbox("ui_size", ("small", "medium", "large"))
+    
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_left_size = st.selectbox("ui_left_size", (None, "small", "medium", "large", "custom"))
+        if _ui_left_size == "custom":
+            with c2: _ui_left_size = st.number_input("left_size", min_value=0, value=198)
+        
+        
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_bottom_size = st.selectbox("ui_bottom_size", (None, "small", "medium", "large", "custom"))
+        if _ui_bottom_size == "custom":
+            with c2: _ui_bottom_size = st.number_input("bottom_size", min_value=0, value=198)
+            
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_right_size = st.selectbox("ui_right_size", (None, "small", "medium", "large", "custom"))
+        if _ui_right_size == "custom":
+            with c2: _ui_right_size = st.number_input("right_size", min_value=0, value=34)
+    
+    with st.expander("UI Setting & Position"):                
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_position = _item_editor_position = st.selectbox("ui_position", ("left", "right"))
+        with c2: _line_width = st.number_input("line_width", min_value=0.5, value=1.0, step=0.1)
+    
+    
+        c1, c2, c3 = st.columns(3)
+        with c1: _class_select_type = st.selectbox("class_select_type", ("select", "radio"))
+        with c2: _class_select_position = st.selectbox("class_select_position", (None, "left", "right", "bottom"))
+    
+        c1, c2, c3 = st.columns(3)
+        with c1: _item_editor = st.toggle("item_editor", True)
+        if _item_editor:
+            with c2: _item_editor_position = st.selectbox("item_editor_position", (None, "left", "right"))
+            with c3: _edit_description = st.toggle("edit_description")
+        else:
+            _item_editor_position = None
+            _edit_description = False
+            
+        c1, c2, c3 = st.columns(3)
+        with c1: _item_selector = st.toggle("item_selector", True)
+        if _item_selector:
+            with c2: _item_selector_position = st.selectbox("item_selector_position", (None, "left", "right"))
+        else:
+            _item_selector_position = None
+    
+    st.session_state.out = detection(
         image_path=target_image_path,
-        bboxes=st.session_state["result_dict_det"][target_image_path]["bboxes"],
-        labels=st.session_state["result_dict_det"][target_image_path]["labels"],
-        label_list=label_list,
-        key=target_image_path + "_det",
+        bboxes=st.session_state["result"][target_image_path]["bboxes"],
+        bbox_format="REL_XYXY",
+        labels=st.session_state["result"][target_image_path]["labels"],
+        label_list=_label_list,
+        line_width=_line_width,
+        class_select_type=_class_select_type,
+        item_editor=_item_editor,
+        item_selector=_item_selector,
+        edit_description=_edit_description,
+        ui_position=_ui_position,
+        class_select_position=_class_select_position,
+        item_editor_position=_item_editor_position,
+        item_selector_position=_item_selector_position,
+        image_height=_height,
+        image_width=_width,
+        ui_size=_ui_size,
+        ui_left_size=_ui_left_size,
+        ui_bottom_size=_ui_bottom_size,
+        ui_right_size=_ui_right_size,
     )
-    new_labels
-
-
+    st.session_state.out
+    
+    with st.expander("api"):
+        st.code(f'''result = detection(
+        image_path=image_path,
+        label_list={_label_list},
+        bboxes={st.session_state["result"][target_image_path]["bboxes"]},
+        bbox_format='REL_XYXY'
+        labels={st.session_state["result"][target_image_path]["labels"]},
+        metaDatas=[],
+        height={_height},
+        width={_width},
+        line_width={_line_width},
+        ui_position={repr(_ui_position)},
+        class_select_position={repr(_class_select_position)},
+        item_editor_position={repr(_item_editor_position)},
+        item_selector_position={repr(_item_selector_position)},
+        class_select_type={repr(_class_select_type)},
+        item_editor={_item_editor},
+        item_selector={_item_selector},
+        edit_description={_edit_description},
+        ui_size={repr(_ui_position)},
+        ui_left_size={repr(_ui_left_size)},
+        ui_bottom_size={repr(_ui_bottom_size)},
+        ui_right_size={repr(_ui_right_size)},
+        key=None
+    )''', language="python")
+    
+    
 with mode[1]: # Classification
     num_page = st.slider("page", 0, len(image_path_list) - 1, 1, key="slider_cls")
-
-    c11, c12 = st.columns(2)
-    with c11:
-        "Default"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list,
-            default_label_index=0,
-        )
-        label
-    with c12:
-        "Default - Three Labels"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list[:3],
-            default_label_index=0,
-        )
-        label
-        
-    c21, c22 = st.columns(2)
-    with c21:
-        "Option: vertical"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list,
-            default_label_index=0,
-            layout="vertical",
-        )
-        label
-        
-    with c22:
-        "Option: vertical - Three Labels"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list[:3],
-            default_label_index=0,
-            layout="vertical",
-        )
-        label 
+    _height = 512
+    _width = 512
+    _ui_height = 40
+    _full_width = False
     
-    c31, c32 = st.columns(2)
-    with c31:
-        "Option: multi"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list,
-            default_label_index=0,
-            multi_select=True
-        )
-        label
-    with c32:
-        "Option: vertical, multi"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list,
-            default_label_index=[0, 2, 4],
-            layout="vertical",
-            multi_select=True
-        )
-        label
+    with st.expander("Size & Label List"):
+        c1, c2, c3, = st.columns(3)
+        with c1: _use_image = st.toggle("show image", True)
+        if _use_image:
+            with c2: _height = st.number_input("image_height", min_value=0, value=512, key="annotation_height")
+            with c3: _width = st.number_input("image_width", min_value=0, value=512, key="annotation_weight")
+        else :
+            with c3: _ui_height = st.number_input("ui_height", min_value=0, value=40, key="annotation_ui_height")
+            with c2: _full_width = st.toggle("ui_bottom_fill_width", False, key="annotation_full_width")
+    
         
-    c41, c42 = st.columns(2)
-    with c41:
-        "Option: select"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list,
-            default_label_index=0,
-            select_list=True,
-        )
-        label      
-    with c42:
-        "Option: select, multi"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list,
-            default_label_index=0,
-            select_list=True,
-            multi_select=True
-        )
-        label
+        _label_list = st.multiselect("Lable List", options=label_list, default=label_list, key="annotation_label_list")
         
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_size = st.selectbox("ui_size", ("small", "medium", "large"), key="annotation_ui_size")
 
-    c51, c52 = st.columns(2)
-    with c51:
-        "Option: vertical, select"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list,
-            default_label_index=0,
-            layout="vertical",
-            select_list=True,
-        )
-        label  
-    with c52:  
-        "Option: vertical, select, multi"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list,
-            default_label_index=[0, 2, 4],
-            layout="vertical",
-            select_list=True,
-            multi_select=True
-        )
-        label
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_left_size = st.selectbox("ui_left_size", (None, "small", "medium", "large", "custom"), key="annotation_ui_left_size")
+        if _ui_left_size == "custom":
+            with c2: _ui_left_size = st.number_input("left_size", min_value=0, value=198, key="annotation_left_size")
         
         
-    c61, c62 = st.columns(2)
-    with c61:
-        "Option: vertical, large"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list,
-            default_label_index=0,
-            layout="vertical",
-            controller_size="large"
-        )
-        label
-    with c62:
-        "Option: large"
-        label = classification(
-            image_path=image_path_list[num_page],
-            label_list=label_list,
-            default_label_index=0,
-            controller_size="large"
-        )
-        label
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_bottom_size = st.selectbox("ui_bottom_size", (None, "small", "medium", "large", "custom"), key="annotation_ui_botton_size")
+        if _ui_bottom_size == "custom":
+            with c2: _ui_bottom_size = st.number_input("bottom_size", min_value=0, value=198)
+            
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_right_size = st.selectbox("ui_right_size", (None, "small", "medium", "large", "custom"), key="annotation_ui_right_size")
+        if _ui_right_size == "custom":
+            with c2: _ui_right_size = st.number_input("right_size", min_value=0, value=34)
+    
+    with st.expander("UI Setting & Position"):                
+        c1, c2, c3 = st.columns(3)
+        with c1: _ui_position = _item_editor_position = st.selectbox("ui_position", ("left", "right"), key="annotation_item_editor_pos")
+    
+        c1, c2, c3, c4 = st.columns(4)
+        with c1: _classification = st.toggle("classification", True, key="annotation_classification")
+        if _classification:
+            with c2: _class_select_position = st.selectbox("class_select_position", (None, "left", "right", "bottom"), key="annotation_class_select_position")
+            with c3: _class_select_type = st.selectbox("class_select_type", ("select", "radio"), key="annotation_class_select_type")
+            with c4: _multi = st.toggle("multi_select", False)
+        else:
+            _multi = False
+            _class_select_type = "select"
+            _class_select_position = None
+    
+        c1, c2, c3, c4 = st.columns(4)
+        with c1: _meta_editor = st.toggle("meta_editor", True, key="annotation_meta_editor")
+        if _meta_editor:
+            with c2: _meta_editor_position = st.selectbox("meta_editor_position", (None, "left", "right"), key="annotation_meta_editor_position")
+            with c3: _edit_description = st.toggle("edit_description", key="annotation_editDescription")
+        else:
+            _meta_editor_position = None
+            _edit_description = False
+                          
+    label = annotation(
+        image_path=image_path_list[num_page] if _use_image else None,
+        label_list=_label_list,
+        default_label_index=0,
+        image_height=_height,
+        image_width=_width,
         
+        classification=_classification,
+        multi_select=_multi,
+        
+        ui_position = _ui_position,
+        class_select_position = _class_select_position,
+        meta_editor_position = _meta_editor_position,
+        
+        class_select_type = _class_select_type,
+        meta_editor = _meta_editor,
+        edit_description = _edit_description,
+            
+        ui_size = _ui_size,
+        ui_left_size = _ui_left_size,
+        ui_bottom_size = _ui_bottom_size,
+        ui_right_size = _ui_right_size,
+        
+        ui_bottom_fill_width = _full_width,
+        ui_height = _ui_height,
+        
+        key=None,
+    )
     
-# with mode[2]:
-
-#     if "result_dict_point" not in st.session_state:
-#         result_dict = {}
-#         for img in image_path_list:
-#             result_dict[img] = {
-#                 "points": [[0, 0], [50, 150], [200, 200]],
-#                 "labels": [0, 3, 4],
-#             }
-#         st.session_state["result_dict_point"] = result_dict.copy()
-
-#     num_page = st.slider("page", 0, len(image_path_list) - 1, 0, key="slider_point")
-#     target_image_path = image_path_list[num_page]
-
-#     new_labels = pointdet(
-#         image_path=target_image_path,
-#         label_list=label_list,
-#         points=st.session_state["result_dict_point"][target_image_path]["points"],
-#         labels=st.session_state["result_dict_point"][target_image_path]["labels"],
-#         key=target_image_path + "_point",
-#     )
-#     if new_labels is not None:
-#         st.session_state["result_dict_point"][target_image_path]["points"] = [
-#             v["point"] for v in new_labels
-#         ]
-#         st.session_state["result_dict_point"][target_image_path]["labels"] = [
-#             v["label_id"] for v in new_labels
-#         ]
-#     st.json(st.session_state["result_dict_point"])
-
-# with mode[3]:
-
-#     if "result_df_cls" not in st.session_state:
-#         st.session_state["result_df_cls"] = pd.DataFrame.from_dict(
-#             {"image": image_path_list, "label": [0] * len(image_path_list)}
-#         ).copy()
-
-#     num_page = st.slider("page", 0, len(image_path_list) - 1, 0, key="slider_tag")
-
-#     "default"
-#     label = tag(
-#         image_path_list[num_page],
-#         label_list=label_list,
-#         default_value=label_list,
-#     )
-#     label
+    label
     
-#     "Option: large"
-#     label = tag(
-#         image_path_list[num_page],
-#         label_list=label_list,
-#         default_value=label_list + [str(num) for num in range(50)],
-#         controller_size="large"
-#     )
-#     label
-    
-#     "Option: vertical"
-#     label = tag(
-#         image_path_list[num_page],
-#         label_list=label_list,
-#         default_value=label_list[:3],
-#         layout="vertical",
-#     )
-#     label
-    
-
-#     "Option: vertical, large"
-#     label = tag(
-#         image_path_list[num_page],
-#         label_list=label_list,
-#         default_value=label_list + [str(num) for num in range(50)],
-#         layout="vertical",
-#         controller_size="large"
-#     )
-#     label
-
-    
-#     c1, c2 = st.columns(2)
-#     with c1:
-#         "Option: compact"
-#         label = tag(
-#             image_path_list[num_page],
-#             label_list=label_list,
-#             default_value=label_list[:3],
-#             compact=True
-#         )
-#         label
-#     with c2:
-#         "Option: compact, vertical"
-#         label = tag(
-#             image_path_list[num_page],
-#             label_list=label_list,
-#             default_value=label_list[:2],
-#             controller_size="small",
-#             layout="vertical",
-#             compact=True
-#         )
-#         label
-     
-   
+    with st.expander("api"):
+        st.code(f'''result = detection(
+        image_path=image_path,
+        label_list={_label_list},
+        default_label_index=0,        
+        image_height={_height},
+        image_width={_width},
+        classification={_classification},
+        multi_select={_multi},
+        ui_position = {repr(_ui_position)},
+        class_select_position = {repr(_class_select_position)},
+        meta_editor_position = {repr(_meta_editor_position)},
+        
+        class_select_type = {repr(_class_select_type)},
+        meta_editor = {repr(_meta_editor)},
+        edit_description = {repr(_edit_description)},
+            
+        ui_size={repr(_ui_position)},
+        ui_left_size={repr(_ui_left_size)},
+        ui_bottom_size={repr(_ui_bottom_size)},
+        ui_right_size={repr(_ui_right_size)},
+        
+        fill_width = {_full_width},
+        ui_height = {_ui_height},
+        
+        key=None,
+    )''', language="python")

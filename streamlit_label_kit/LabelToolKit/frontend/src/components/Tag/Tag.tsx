@@ -1,4 +1,4 @@
-import React, {useCallback} from "react"
+import React, { useCallback, useEffect } from "react"
 
 import { BaseComponentProps } from '../../utils/BaseComponent';
 import Paper from '@mui/material/Paper';
@@ -26,8 +26,9 @@ export const Tag = ({
   compact = false,
   setMetaData,
   disabled = false,
-  label = "tags"
+  label = "tags",
 }: TagProps) => {
+
 
   const [inputValue, setInputValue] = React.useState('');
 
@@ -38,33 +39,53 @@ export const Tag = ({
     }
   }, [metaData, setMetaData]);
 
-
-  const handleAdd = () => {
+  const handleAdd = useCallback(() => {
     if (!metaData?.includes(inputValue) && inputValue !== "") {
       let meta = [...metaData, inputValue];
-      
       if (setMetaData) {
         setMetaData(meta);
       }
       setInputValue("");
     }
-  };
+  }, [inputValue, metaData, setMetaData]);
+
+  const handleKeyInteraction = useCallback((e: KeyboardEvent) => {
+    if (e.type !== "keydown") {
+      return;
+    }
+
+    if (e.key === "Enter") {
+      handleAdd();
+      e.preventDefault();
+    }
+  }, [handleAdd]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyInteraction);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyInteraction);
+    };
+  }, [handleKeyInteraction]);
+
 
   const renderInput = () => {
     return (
       <Paper
         component="form"
         variant="outlined"
-        sx={{ 
-          borderRadius: "1rem", 
-          p: '0', 
-          display: 'flex', 
-          alignItems: 'center', 
+        sx={{
+          borderRadius: "1rem",
+          border: "1px solid rgba(0, 0, 0, 0.22)",
+          p: '0',
+          display: 'flex',
+          alignItems: 'center',
           width: width,
+          height: "31.7px"
         }}
       >
         <InputBase
-          sx={{ ml: 1, flex: 1, fontSize: "0.9rem"}}
+          sx={{ ml: 1, flex: 1, fontSize: "0.9rem" }}
           placeholder={disabled ? label : "add " + label}
           inputProps={{ 'aria-label': 'Add Meta Data' }}
           value={inputValue}
@@ -75,18 +96,16 @@ export const Tag = ({
         />
 
         {disabled ? null : <>
-          <IconButton 
-            type="button" 
-            sx={{p: '0', pr: '5px'}} 
-            aria-label="add-meta" 
+          <IconButton
+            type="button"
+            sx={{ p: '0', pr: '5px' }}
+            aria-label="add-meta"
             onClick={handleAdd}
             disabled={disabled}
           >
             <AddOutlinedIcon />
           </IconButton>
         </>}
-        
-        
       </Paper>
     );
   }
@@ -109,11 +128,11 @@ export const Tag = ({
       >
 
         {metaData.map((data, index) => (
-            <Chip
-              label={data}
-              onDelete={disabled ? undefined: (() => handleDelete(data))}
-              sx={{m: "3px"}}
-            />
+          <Chip
+            label={data}
+            onDelete={disabled ? undefined : (() => handleDelete(data))}
+            sx={{ m: "3px" }}
+          />
         ))}
       </Box>
     );
@@ -122,17 +141,17 @@ export const Tag = ({
   const renderCompact = () => {
     return (
       <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'start',
-            flexWrap: 'wrap',
-            listStyle: 'none',
-            padding: '0px',
-            width: width,
-            maxHeight: "100%",
-            overflowY: "auto",
-            m: 0,
-          }}
+        sx={{
+          display: 'flex',
+          justifyContent: 'start',
+          flexWrap: 'wrap',
+          listStyle: 'none',
+          padding: '0px',
+          width: width,
+          maxHeight: "100%",
+          overflowY: "auto",
+          m: 0,
+        }}
       >
         <Autocomplete
           multiple
@@ -156,14 +175,14 @@ export const Tag = ({
               setMetaData(newValue)
             }
           }}
-          sx={{padding:"6px", width: "100%"}}
+          sx={{ padding: "6px", width: "100%" }}
         />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ width, height, overflowY: "auto" }}>
+    <Box sx={{ width, height:height, maxHeight:height, overflowY: "auto" }}>
       {compact ? renderCompact() : <>
         {renderInput()}
         {renderChip()}

@@ -8,8 +8,13 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import useImage from 'use-image';
-import { BBoxCanvas, ItemList, ClassSelect, ItemInfo } from '../components';
+import { BBoxCanvas, ItemList, ClassSelect, ItemInfo, ClassRadio } from '../components';
 import { BaseItem, Rectangle, PythonArgs } from '../utils'
+import { CommmonArgs, DetectionArgs, DevArgs } from "../utils";
+import { PassThrough } from "stream";
+
+const _CLASS_SELECT_HEIGHT = 41 + 6;
+const _SPACE = 8;
 
 export const Detection = (args: PythonArgs) => {
   const {
@@ -21,14 +26,97 @@ export const Detection = (args: PythonArgs) => {
     line_width = 1.0,
     ui_width,
     ui_height,
-  }: PythonArgs = args
+    class_select_type = "select",
+    class_select_position = "right",
+    item_editor = false,
+    item_editor_position = "right",
+    item_selector = false,
+    item_selector_position = "right",
+    ui_left_size = 0,
+    ui_bottom_size = 0,
+    ui_right_size = 0,  
+    edit_description = false,
+    edit_meta = false,
+  }: CommmonArgs & DetectionArgs & DevArgs = args
 
   const UI_WIDTH = ui_width;
   const UI_HEIGHT = ui_height;
-  const left_control: boolean = false;
-  const right_control: boolean = true;
-  const bottom_control: boolean = false;
 
+  let left_width: number = 0;
+  let left_height: number = 0;
+  let right_width: number = 0;
+  let right_height: number = 0;
+  let bottom_height: number = 0;
+  let left_item_num: number = 0;
+  let right_item_num: number = 0;
+
+
+  // Determine Size of Each Control UI Components
+  switch (class_select_position) {
+    case "left":
+      left_width = ui_left_size;
+      if (class_select_type == "radio") {
+        left_item_num += 1;
+      } else {
+        left_height += _CLASS_SELECT_HEIGHT + _SPACE;
+      }  
+      break;
+    case "right":
+      right_width = ui_right_size;
+      if (class_select_type == "radio") {
+        right_item_num += 1;
+      } else {
+        right_height += _CLASS_SELECT_HEIGHT + _SPACE;
+      }
+      break;
+    case "bottom":
+      bottom_height = class_select_type === "select" ?  _CLASS_SELECT_HEIGHT + 4: ui_bottom_size + _SPACE;
+
+      break;
+  }
+  
+  if (item_editor) {
+    switch (item_editor_position) {
+      case "left":
+        left_width = ui_left_size;
+        left_item_num += 1;
+        break;
+      case "right":
+        right_width = ui_right_size;
+        right_item_num += 1;
+        break;
+    }
+  }
+
+  if (item_selector) {
+    switch (item_selector_position) {
+      case "left":
+        left_width = ui_left_size;
+        left_item_num += 1;
+        break;
+      case "right":
+        right_width = ui_right_size;
+        right_item_num += 1;
+        break;
+    }
+  }
+
+  left_height = Math.trunc((window.innerHeight - left_height - _SPACE * Math.max(left_item_num - 1, 0)) / (left_item_num || 1));
+  right_height = Math.trunc((window.innerHeight - right_height - _SPACE  * Math.max(right_item_num - 1, 0)) / (right_item_num || 1));
+
+  let radio_ui_height: number = ui_bottom_size;
+  switch (class_select_position) {
+    case "left":
+      radio_ui_height = left_height;
+      break;
+    case "right":
+      radio_ui_height = right_height;
+      break;
+    default:
+      radio_ui_height = ui_bottom_size;
+      break;
+  }
+  
   const params = new URLSearchParams(window.location.search);
   const baseUrl = params.get('streamlitUrl')
   const [image] = useImage(baseUrl + image_url)
@@ -54,10 +142,10 @@ export const Detection = (args: PythonArgs) => {
   const [scale, setScale] = useState(1.0)
   useEffect(() => {
     const resizeCanvas = () => {
-      const control_width = (left_control ? UI_WIDTH : 0) + (right_control ? UI_WIDTH : 0)
-      const scale_ratio = (window.innerWidth - control_width) / image_size[0]
+      const control_width = left_width + right_width;
+      const scale_ratio = (window.innerWidth - control_width) / image_size[0];
       setScale(Math.min(scale_ratio, 1.0))
-      Streamlit.setFrameHeight(image_size[1] * Math.min(scale_ratio, 1.0) + (bottom_control ? UI_HEIGHT : 0))
+      Streamlit.setFrameHeight(image_size[1] * Math.min(scale_ratio, 1.0) + bottom_height);
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas()
@@ -109,7 +197,7 @@ export const Detection = (args: PythonArgs) => {
         setLabel(rects[index].label)
         setSelectedItem(rects[index])
       }
-    }
+    } 
 
     setStreamlitOutput(rects, selectedId);
   }, [selectedId, setRectangles, setLabel, setSelectedItem]);
@@ -124,7 +212,7 @@ export const Detection = (args: PythonArgs) => {
 
     const rects = [...rectangles];
     let index = rects.findIndex(rect => rect.id === selected);
-    if (index !== -1 && selected) {
+    if (selected && index !== -1) {
       setLabel(rects[index].label)
       setSelectedItem(rects[index])
     } else {
@@ -176,73 +264,143 @@ export const Detection = (args: PythonArgs) => {
     }
   }, [setSelectedId, updateRectangle, rectangles, selectedId]);
 
+  const ClassSelectRender = ({ marginTop, width = "calc(100%)" }: { marginTop?: number | string , width?: number|string }) => {
+    return (
+      class_select_type === "select" ? 
+        <ClassSelect
+            width={width}
+            height="calc(100%)"
+            label={label}
+            label_list={label_list}
+            handleChange={handleClassSelectorChange}
+            title="Current Class"
+            marginTop={marginTop}
+        /> : 
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'start',
+            flexWrap: 'wrap',
+            listStyle: 'none',
+            padding: '0px',
+            width: width,
+            maxHeight: `${radio_ui_height}px`,
+            overflowY: "auto",
+            overflowX: "clip",
+            m: 0,
+          }}
+        >
+          <ClassRadio
+              vertical={class_select_position !== "bottom"}
+              width="100%"
+              height={radio_ui_height}
+              label={label}
+              label_list={label_list}
+              handleChange={handleClassSelectorChange}
+              multi={false}
+          />
+        </Box>
+    );
+  };
+
+  const ElementEditorRender = ({ height }: { height: number }) => {
+    return (
+      <ItemInfo
+        width="100%"
+        height={`${height}px`}
+        item={selectedId != null && selectedItem ? selectedItem : undefined}
+        items={rectangles}
+        edit
+        displayLabel
+        displayMetaData = {edit_meta}
+        displayDescription = {!edit_meta && edit_description}
+        setItem={updateItem}
+      />
+    );
+  }
+
+  const ElementSelectRender = ({ height }: { height: number }) => {
+    return (
+      <ItemList
+        height={`${height}px`}
+        items={rectangles}
+        selectedId={selectedId}
+        controlMode="delete"
+        colorMap={color_map}
+        handleSecondary={handleDelete}
+        handleSelect={updateSelected}
+      />
+    );
+  }
+
+  const RenderUi = ({pos} : {pos: "left" | "right"}) => {
+    let width: number = 0;
+    let height: number = 0;
+
+    switch(pos) {
+      case "left":
+        width = left_width;
+        height = left_height;
+        break;
+      case "right":
+        width = right_width;
+        height = right_height;
+        break;
+    }
+
+    return (
+      <Stack
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        spacing={`${_SPACE}px`}
+        width={`${width}px`}
+        sx={{ px: `${_SPACE}px` }}
+      >
+        {class_select_position === pos ? <ClassSelectRender /> : null}
+        {(item_editor && item_editor_position === pos) ? <ElementEditorRender height={height} /> : null}
+        {(item_selector && item_selector_position === pos)? <ElementSelectRender height={height} /> : null}
+      </Stack>
+    ); 
+};
+
   return (
     <Box>
       <Stack
         direction="row"
         justifyContent="center"
         alignItems="start"
-        spacing={0.5}
       >
-        <BBoxCanvas
-          rectangles={rectangles}
-          mode={mode}
-          selectedId={selectedId}
-          scale={scale}
-          setSelectedId={updateSelected}
-          setRectangles={updateRectangle}
-          setLabel={setLabel}
-          color_map={color_map}
-          label={label}
-          image={image}
-          image_size={image_size}
-          strokeWidth={line_width}
-        />
 
+        {(left_width !== 0) ? <RenderUi pos={"left"}/> : undefined}
+        
         <Stack
           direction="column"
           justifyContent="center"
           alignItems="center"
-          spacing={"8px"}
-          width={UI_WIDTH}
-          sx={{ px: "8px" }}
+          spacing={`${_SPACE}px`}
+          sx={{ px: "0px" }}
         >
-          <ClassSelect
-            width={"calc(100%)"}
-            height={"calc(100%)"}
-            label={label}
-            label_list={label_list}
-            handleChange={handleClassSelectorChange}
-            title={"Current Class"}
-          />
-
-          <ItemInfo
-            width="100%"
-            height="140px"
-            item={selectedItem ? selectedItem : undefined}
-            items={rectangles}
-            edit
-            displayLabel
-            displayMetaData
-            setItem={updateItem}
-          />
-
-          <ItemList
-            height={window.innerHeight - 171 - UI_HEIGHT}
-            items={rectangles}
+          <BBoxCanvas
+            rectangles={rectangles}
+            mode={mode}
             selectedId={selectedId}
-            // disabledIds={rectangles.map((rct) => rct.id)}
-            controlMode="delete"
-            colorMap={color_map}
-            handleSecondary={handleDelete}
-            handleSelect={updateSelected}
+            scale={scale}
+            setSelectedId={updateSelected}
+            setRectangles={updateRectangle}
+            setLabel={setLabel}
+            color_map={color_map}
+            label={label}
+            image={image}
+            image_size={image_size}
+            strokeWidth={line_width}
           />
-
+          {class_select_position === "bottom" ? <ClassSelectRender marginTop={"10px !important"} width={image_size[0] * scale}/> : undefined}
         </Stack>
+
+        {(right_width !== 0) ? <RenderUi pos={"right"}/> : undefined}
       </Stack>
+      
     </Box>
   )
 }
-
-
-// export default withStreamlitConnection(Classification)

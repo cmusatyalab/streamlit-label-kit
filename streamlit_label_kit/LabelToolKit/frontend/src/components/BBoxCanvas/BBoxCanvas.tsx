@@ -22,7 +22,7 @@ export interface BBoxCanvasLayerProps {
 const MIN_SIZE = 5;
 const MOVE_PIXEL = 5;
 const KEY_NAMES = new Set<string>([
-  "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Escape", "Enter"
+  "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Escape",
 ])
 
 let keyState: { [key: string]: boolean } = {}
@@ -135,7 +135,7 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
       window.removeEventListener('keydown', handleKeyInteraction);
       window.removeEventListener('keyup', handleKeyInteraction);
     };
-  }, [rectangles, image_size, selectedId])
+  }, [rectangles, image_size, selectedId, handleKeyInteraction])
 
   return (
     <Stage 
