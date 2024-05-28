@@ -15,10 +15,10 @@ with mode[0]:
         result_dict = {}
         for img in image_path_list:
             # # XYWH format
-            result_dict[img] = {
-                "bboxes": [[0, 0, 200, 100], [10, 20, 100, 150]],
-                "labels": [0, 0],
-            }
+            # result_dict[img] = {
+            #     "bboxes": [[0, 0, 200, 100], [10, 20, 100, 150]],
+            #     "labels": [0, 0],
+            # }
             
             # # REL_XYWH format
             # result_dict[img] = {
@@ -34,6 +34,15 @@ with mode[0]:
             #     "bboxes": [[0, 0, 200, 100], [10, 20, 110, 170]],
             #     "labels": [0, 0],
             # }
+            
+            # # REL_XYXY format
+            result_dict[img] = {
+                "bboxes": [
+                    [0 / image_size[0], 0 / image_size[1], 200 / image_size[0], 100 / image_size[1]], 
+                    [10 /image_size[0], 20 / image_size[1], 110 / image_size[0], 170 / image_size[1]]
+                    ],
+                "labels": [0, 0],
+            }
         st.session_state["result"] = result_dict.copy()
 
     num_page = st.slider("page", 0, len(image_path_list) - 1, 1, key="slider_det")
@@ -94,7 +103,7 @@ with mode[0]:
     st.session_state.out = detection(
         image_path=target_image_path,
         bboxes=st.session_state["result"][target_image_path]["bboxes"],
-        bbox_format="XYWH",
+        bbox_format="REL_XYXY",
         labels=st.session_state["result"][target_image_path]["labels"],
         label_list=_label_list,
         line_width=_line_width,
@@ -120,6 +129,7 @@ with mode[0]:
         image_path=image_path,
         label_list={_label_list},
         bboxes={st.session_state["result"][target_image_path]["bboxes"]},
+        bbox_format='REL_XYXY'
         labels={st.session_state["result"][target_image_path]["labels"]},
         metaDatas=[],
         height={_height},
