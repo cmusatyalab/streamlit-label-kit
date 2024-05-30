@@ -20,6 +20,7 @@ export interface BBoxProps {
   scale: number,
   strokeWidth: number
   showLabel?: boolean,
+  readOnly?: boolean,
 }
 
 export const BBox = (props: BBoxProps) => {
@@ -28,6 +29,7 @@ export const BBox = (props: BBoxProps) => {
   const {
     rectProps, onChange, isSelected, fill, onClick, scale, strokeWidth,
     showLabel = true,
+    readOnly = false,
   }: BBoxProps = props
   const [moving, setMoving] = useState(false);
 
@@ -53,8 +55,8 @@ export const BBox = (props: BBoxProps) => {
         height={rectProps.height * scale}
         //scaleX={scale}
         //scaleY={scale}
-        draggable={isSelected}
-        strokeWidth={strokeWidth}
+        draggable={isSelected && !readOnly}
+        strokeWidth={isSelected ? strokeWidth + 1 : strokeWidth}
         fill={rectProps.stroke}
         opacity={fill}
         onDragStart={(e) => {
@@ -95,13 +97,14 @@ export const BBox = (props: BBoxProps) => {
           });
         }}
       />
+
       <Transformer
         ref={trRef}
-        resizeEnabled={isSelected}
+        resizeEnabled={isSelected && !readOnly}
         rotateEnabled={false}
         keepRatio={false}
         borderStroke={rectProps.stroke}
-        borderStrokeWidth={strokeWidth}
+        borderStrokeWidth={isSelected && readOnly ? strokeWidth + 1 : strokeWidth}
         boundBoxFunc={(oldBox, newBox) => {
           // limit resize
           if (newBox.width < 5 || newBox.height < 5) {
@@ -110,6 +113,7 @@ export const BBox = (props: BBoxProps) => {
           return newBox;
         }}
       />
+
     </React.Fragment>
   );
 };

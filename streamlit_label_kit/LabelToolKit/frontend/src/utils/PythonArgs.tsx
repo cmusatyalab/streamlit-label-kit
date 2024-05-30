@@ -26,7 +26,7 @@ export interface CommmonArgs {
   // ui_width?: number | string,
   // ui_height?: number,
   label_list?: string[],
-
+  read_only?: boolean,
   label_type: "annotation" | "detection" | "segmentation"
 };
 
@@ -48,6 +48,7 @@ export interface DetectionArgs {
   bbox_info?: any[],
   color_map?: any,
   line_width?: number,
+  info_dict?: any[],
 }
 
 export interface ClassificationArgs {

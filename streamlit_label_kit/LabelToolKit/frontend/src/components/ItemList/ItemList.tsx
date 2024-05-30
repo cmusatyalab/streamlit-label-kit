@@ -63,7 +63,7 @@ export const ItemList = ({
                 sx={{'& .MuiSvgIcon-root': { width: "1.2rem" }}}
                 onClick={handleSecondary ? () => handleSecondary(item.id) : undefined}
               >
-                {controlMode === "delete"? <ClearIcon /> : disabledIds.includes(item.id) ?  <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
+                {controlMode === "delete" ? <ClearIcon /> : disabledIds.includes(item.id) ?  <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
               </IconButton>) : undefined
             }
             sx={{"padding": 0}}

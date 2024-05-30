@@ -16,7 +16,8 @@ export interface BBoxCanvasLayerProps {
   label: string,
   image_size: number[],
   image: any,
-  strokeWidth: number
+  strokeWidth: number,
+  readOnly?: boolean,
 }
 
 const MIN_SIZE = 5;
@@ -40,14 +41,15 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
     label,
     image_size,
     image,
-    strokeWidth
+    strokeWidth,
+    readOnly = false
   }: BBoxCanvasLayerProps = props
   const [adding, setAdding] = useState<number[] | null>(null)
   
   const handleDeselect = useCallback((e: Konva.KonvaEventObject<MouseEvent>) => {
     if (!(e.target instanceof Konva.Rect)) {
       setSelectedId(null);
-      if (mode === 'Transform') {
+      if (mode === 'Transform' && !readOnly) {
         const pointer = e.target.getStage()?.getPointerPosition();
         if (pointer) {
           setAdding([pointer.x, pointer.y, pointer.x, pointer.y]);
@@ -65,7 +67,7 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
 
     let updated = true
 
-    if (updated) {
+    if (updated && !readOnly) {
       let rects = [...rectangles];
       let index = rects.findIndex(rect => rect.id === selectedId);
       if (index === -1) return;
@@ -143,7 +145,7 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
       height={image_size[1] * scale}
       onMouseDown={handleDeselect}
       onMouseMove={(e: any) => {
-        if (adding) {
+        if (adding && !readOnly) {
           const pointer = e.target.getStage()?.getPointerPosition()
           if (pointer){
             setAdding([adding[0], adding[1], pointer.x, pointer.y])
@@ -151,25 +153,28 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
         }
       }}
       onMouseLeave={(e: any) => {
-        setAdding(null)
+        if (!readOnly) {
+          setAdding(null);
+        }
       }}
       onMouseUp={(e: any) => {
-        if (adding && Math.abs((adding[2] - adding[0]) / scale) >= MIN_SIZE && Math.abs((adding[3] - adding[1]) / scale) >= MIN_SIZE) {
-          const newRect = {
-            x: adding[0] / scale,
-            y: adding[1] / scale,
-            width: (adding[2] - adding[0]) / scale,
-            height: (adding[3] - adding[1]) / scale,
-            label,
-            id: Date.now().toString().slice(-8),
-            stroke: color_map[label],
-            meta: []
-          };
-          setRectangles([...rectangles, newRect]);
-          setSelectedId(newRect.id);
-        }
-        setAdding(null);
-      }}
+        if (!readOnly) {
+          if (adding && Math.abs((adding[2] - adding[0]) / scale) >= MIN_SIZE && Math.abs((adding[3] - adding[1]) / scale) >= MIN_SIZE) {
+            const newRect = {
+              x: adding[0] / scale,
+              y: adding[1] / scale,
+              width: (adding[2] - adding[0]) / scale,
+              height: (adding[3] - adding[1]) / scale,
+              label,
+              id: Date.now().toString().slice(-8),
+              stroke: color_map[label],
+              meta: []
+            };
+            setRectangles([...rectangles, newRect]);
+            setSelectedId(newRect.id);
+          }
+          setAdding(null);
+      }}}
       >
         
       <Layer>
@@ -184,6 +189,7 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
               scale={scale}
               fill={0.3}
               strokeWidth={strokeWidth}
+              readOnly={readOnly}
               isSelected={mode === 'Transform' && rect.id === selectedId}
               onClick={() => {
                 if (mode === 'Transform') {
@@ -194,11 +200,12 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
                   setRectangles(rects.filter((element) => element.id !== rect.id));
                 }
               }}
-              onChange={(newAttrs: any) => {
-                const rects = rectangles.slice();
-                rects[i] = newAttrs;
-                setRectangles(rects);
-              }}
+              onChange={(newAttrs: any) => { 
+                if (!readOnly) {
+                  const rects = rectangles.slice();
+                  rects[i] = newAttrs;
+                  setRectangles(rects);
+              }}}
             />
           );
         })}

@@ -72,6 +72,8 @@ def annotation(
     ui_bottom_fill_width: bool = False,
     ui_height: int = None,
     
+    read_only: bool = False,
+    
     key=None,
 ) -> CustomComponent:
     if (image_path):
@@ -148,6 +150,8 @@ def annotation(
         ui_left_size=_left_size,
         ui_bottom_size=_bottom_size,
         ui_right_size=_right_size,
+        
+        read_only=read_only,
         
         default_multi_label_list=_default_label_list,
         label_type="annotation"

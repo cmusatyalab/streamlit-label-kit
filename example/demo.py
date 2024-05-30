@@ -78,6 +78,7 @@ with mode[0]:
         c1, c2, c3 = st.columns(3)
         with c1: _ui_position = _item_editor_position = st.selectbox("ui_position", ("left", "right"))
         with c2: _line_width = st.number_input("line_width", min_value=0.5, value=1.0, step=0.1)
+        with c3: _read_only = st.toggle("read_only", False)
     
     
         c1, c2, c3 = st.columns(3)
@@ -121,6 +122,7 @@ with mode[0]:
         ui_left_size=_ui_left_size,
         ui_bottom_size=_ui_bottom_size,
         ui_right_size=_ui_right_size,
+        read_only=_read_only
     )
     st.session_state.out
     
@@ -193,6 +195,7 @@ with mode[1]: # Classification
     with st.expander("UI Setting & Position"):                
         c1, c2, c3 = st.columns(3)
         with c1: _ui_position = _item_editor_position = st.selectbox("ui_position", ("left", "right"), key="annotation_item_editor_pos")
+        with c3: _read_only = st.toggle("read_only", False, "read_only_classification")
     
         c1, c2, c3, c4 = st.columns(4)
         with c1: _classification = st.toggle("classification", True, key="annotation_classification")
@@ -239,6 +242,8 @@ with mode[1]: # Classification
         
         ui_bottom_fill_width = _full_width,
         ui_height = _ui_height,
+        
+        read_only=_read_only,
         
         key=None,
     )
