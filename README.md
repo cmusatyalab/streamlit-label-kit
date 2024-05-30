@@ -8,7 +8,7 @@ Streamlit component for general labeling task
 1. git clone this repo.
 2. build frontend as following
 ```bash
-cd stremlit_label_kit/LabelToolKit/frontend
+cd streamlit_label_kit/LabelToolKit/frontend
 yarn build
 ```
 

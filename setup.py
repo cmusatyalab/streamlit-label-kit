@@ -7,7 +7,7 @@ setuptools.setup(
     name="streamlit_label_kit",
     version="0.0.9",
     author="jinhoyi",
-    description="streamlit components for generel labeling",
+    description="streamlit components for general labeling",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/cmusatyalab/streamlit-label-kit",

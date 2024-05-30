@@ -4,7 +4,7 @@ import pandas as pd
 from streamlit_label_kit import detection, annotation
 
 mode = st.tabs(["Detection", "Classification"])
-label_list = ["deer", "human", "dog", "penguin", "framingo", "teddy bear"]
+label_list = ["deer", "human", "dog", "penguin", "flamingo", "teddy bear"]
 image_path_list = glob("image/*.jpg")
 
 image_size = [700, 467]
