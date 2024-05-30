@@ -37,6 +37,7 @@ export const ClassSelect = <Multiple extends boolean = false>({
   multi = false as Multiple,
   title = multi ? "Select Classes" : "Select Class",
   marginTop = "6px !important",
+  disabled = false,
 }: ClassSelectProps<Multiple>) => {
 
   return (
@@ -51,6 +52,7 @@ export const ClassSelect = <Multiple extends boolean = false>({
         label={title}
         renderValue={multi ? (selected: any) => selected.join(', ') : undefined}
         MenuProps={MenuProps}
+        disabled={disabled}
       >
         {label_list.map((option, index) => (
           <MenuItem key={index} value={option} sx={{ minHeight: "0px", py: "3px" }}>

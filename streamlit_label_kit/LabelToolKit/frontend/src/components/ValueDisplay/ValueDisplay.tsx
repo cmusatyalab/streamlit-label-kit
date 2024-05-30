@@ -17,6 +17,7 @@ interface ValueDisplayProps extends BaseComponentProps {
   edit?: boolean;
   paddingLeft?: string | number;
   setValue?: (value: string) => void;
+  disabled?: boolean,
 } 
 
 export const ValueDisplay = ({
