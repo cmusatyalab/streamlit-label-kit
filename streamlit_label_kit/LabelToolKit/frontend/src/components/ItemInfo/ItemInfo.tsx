@@ -16,6 +16,7 @@ interface ItemInfoProps extends BaseComponentProps {
   displayLabel?: boolean;
   displayMetaData?: boolean;
   displayDescription?: boolean;
+  additionalInfo?: {};
   setItem?: (item: BaseItem) => void;
 } 
 
@@ -58,7 +59,8 @@ export const ItemInfo = ({
       sx={{
         width: width,
         height: height,
-        overflowY: "clip",
+        // overflowY: "clip",
+        overflowY: "auto",
         overflowX: "clip",
       }}
     >
@@ -91,6 +93,16 @@ export const ItemInfo = ({
             paddingLeft={"0.4rem"}
           />
         </> : null}
+
+        {item?.additional_data ? Object.entries(item.additional_data).map(([title, info]) => (
+          <ValueDisplay
+            key={title}
+            width="100%"
+            label={title}
+            value={info}
+            paddingLeft={"0.4rem"}
+          />
+        )): null}
 
         {displayMetaData ? <> 
           <Tag

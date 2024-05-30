@@ -36,7 +36,8 @@ export const Detection = (args: PythonArgs) => {
     edit_description = false,
     edit_meta = false,
     read_only = false,
-    info_dict = []
+    bbox_show_additional = false,
+    bbox_show_label = false,
   }: CommmonArgs & DetectionArgs & DevArgs = args
 
   let left_width: number = 0;
@@ -128,7 +129,8 @@ export const Detection = (args: PythonArgs) => {
         label: bb.label,
         stroke: color_map[bb.label],
         id: 'bbox-' + i,
-        meta: [],
+        meta: bb.meta,
+        additional_data: bb.additional_data,
       }
     }));
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
@@ -389,6 +391,8 @@ export const Detection = (args: PythonArgs) => {
             image_size={image_size}
             strokeWidth={line_width}
             readOnly={read_only}
+            showLabel={bbox_show_label}
+            showAdditional={bbox_show_additional}
           />
           {class_select_position === "bottom" ? <ClassSelectRender marginTop={"10px !important"} width={image_size[0] * scale}/> : undefined}
         </Stack>

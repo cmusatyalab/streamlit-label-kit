@@ -146,7 +146,7 @@ def detection(
     bboxes=None,
     labels=[],
     read_only=False,
-    infoDict={},
+    infoDict: list[dict[str:str]] = [],
     metaDatas: list[list[str]] = [],
     bbox_format: Literal["XYWH", "XYXY", "CXYWH", "REL_XYWH", "REL_XYXY", "REL_CXYWH"] = "XYWH",
     image_height=512,
@@ -157,14 +157,16 @@ def detection(
     item_editor_position: Literal["right", "left"] = None,
     item_selector_position: Literal["right", "left"] = None,
     class_select_type: Literal["select", "radio"] = "select",
-    item_editor: bool = True,
-    item_selector: bool = True,
-    edit_meta: bool = True,
+    item_editor: bool = False,
+    item_selector: bool = False,
+    edit_meta: bool = False,
     edit_description: bool = False,
     ui_size: Literal["small", "medium", "large"] = "small",
     ui_left_size: Union[Literal["small", "medium", "large"], int] = None,
     ui_bottom_size: Union[Literal["small", "medium", "large"], int] = None,
     ui_right_size: Union[Literal["small", "medium", "large"], int] = None,
+    bbox_show_label: bool = False,
+    bbox_show_info: bool = False,
     key=None,
 ) -> CustomComponent:
 
@@ -193,7 +195,8 @@ def detection(
     _class_select_pos = class_select_position or ui_position
     _item_editor_pos = item_editor_position or ui_position
     _item_selector_pos = item_selector_position or ui_position
-    _edit_meta = not edit_description
+    _edit_meta = edit_meta
+    _edit_description = not edit_meta and edit_description
 
     _, _left_size = _calc_size(ui_left_size or ui_size)
     _bottom_size, _ = _calc_size(ui_bottom_size or ui_size)
@@ -201,7 +204,7 @@ def detection(
 
     _select_type = "radio" if class_select_type != "select" else "select"
 
-    # Configure default labels, metaDatas
+    # Configure default labels, metaDatas, additional_info
     num_bboxes = len(bboxes)
     if len(labels) > num_bboxes:
         labels = labels[:num_bboxes]
@@ -212,6 +215,11 @@ def detection(
         metaDatas = metaDatas[:num_bboxes]
     else:
         metaDatas.extend([[]] * (num_bboxes - len(metaDatas)))
+        
+    if len(infoDict) > num_bboxes:
+        infoDict = metaDatas[:num_bboxes]
+    else:
+        infoDict.extend([[]] * (num_bboxes - len(infoDict)))
 
     # Convert BBOX Format to XYWH
     if "REL" in bbox_format:
@@ -223,16 +231,18 @@ def detection(
     else:
         original_format = bbox_format
     bboxes = [convert_bbox_format(bbox, original_format, "XYWH") for bbox in bboxes]
-    
+
     bbox_info = [
         {
             "bbox": [b / scale for b in item[0]],
             "label_id": item[1],
             "label": label_list[item[1]],
             "meta": item[2],
+            "additional_data": item[3],
         }
-        for item in zip(bboxes, labels, metaDatas)
+        for item in zip(bboxes, labels, metaDatas, infoDict)
     ]
+    
 
     component_value = _component_func(
         image_url=image_url,
@@ -244,7 +254,7 @@ def detection(
         ui_width=20,
         ui_height=20,
         edit_meta=_edit_meta,
-        edit_description=True,
+        edit_description=_edit_description,
         class_select_type=_select_type,
         item_editor=item_editor,
         item_selector=item_selector,
@@ -256,6 +266,8 @@ def detection(
         ui_right_size=_right_size,
         key=key,
         read_only=read_only,
+        bbox_show_label=bbox_show_label,
+        bbox_show_additional=bbox_show_info,
         label_type="detection",
     )
     
@@ -287,7 +299,7 @@ def detection(
                 convert_bbox_format(bbox["bbox"], "XYWH", original_format)
                 for bbox in bboxes
             ]
-
+            
     return {
         "bbox": bboxes,
         "image_size": original_image_size,

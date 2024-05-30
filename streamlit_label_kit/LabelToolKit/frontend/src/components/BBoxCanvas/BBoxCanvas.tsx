@@ -18,6 +18,8 @@ export interface BBoxCanvasLayerProps {
   image: any,
   strokeWidth: number,
   readOnly?: boolean,
+  showLabel?: boolean,
+  showAdditional?: boolean,
 }
 
 const MIN_SIZE = 5;
@@ -42,7 +44,9 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
     image_size,
     image,
     strokeWidth,
-    readOnly = false
+    readOnly = false,
+    showLabel = false,
+    showAdditional = false,
   }: BBoxCanvasLayerProps = props
   const [adding, setAdding] = useState<number[] | null>(null)
   
@@ -206,6 +210,8 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
                   rects[i] = newAttrs;
                   setRectangles(rects);
               }}}
+              showLabel={showLabel}
+              showAddiontal={showAdditional}
             />
           );
         })}

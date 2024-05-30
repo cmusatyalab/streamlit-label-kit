@@ -48,7 +48,8 @@ export interface DetectionArgs {
   bbox_info?: any[],
   color_map?: any,
   line_width?: number,
-  info_dict?: any[],
+  bbox_show_additional?: boolean,
+  bbox_show_label?: boolean,
 }
 
 export interface ClassificationArgs {

@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 
 interface ValueDisplayProps extends BaseComponentProps {
   label: string;
-  value?: string;
+  value?: any;
   reservedValue?: string[];
   edit?: boolean;
   paddingLeft?: string | number;

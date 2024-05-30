@@ -1,9 +1,5 @@
 import os
 import streamlit.components.v1 as components
-from typing import List
-
-import numpy as np
-import matplotlib.pyplot as plt
 from streamlit_label_kit import IS_RELEASE
 
 if IS_RELEASE:
