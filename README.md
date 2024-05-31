@@ -3,15 +3,22 @@
 Streamlit component for general labeling task
 
 
-# Install
+## Installation instructions
+
+```sh
+pip install streamlit-label-kit
+```
+
+or
 
 1. git clone this repo.
 2. build frontend as following
-```bash
+
+```sh
 cd streamlit_label_kit/LabelToolKit/frontend
+yarn install
 yarn build
 ```
-
 3. activate your virtual environment
 4. pip install -e .
 
@@ -20,6 +27,7 @@ Checkout example/demo.py
 
 run by 
 ```bash
+pip install streamlit-label-kit matplotlib
 streamlit run --server.headless True --server.fileWatcherType none example/demo.py 
 ```
 

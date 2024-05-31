@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "streamlit-label-kit"
+authors = [
+    {name = "Carnegie Mellon University", email = "satya+group@cs.cmu.edu"},
+    {name = "Jinho Yi", email = "jinhoy@andrew.cmu.edu"},
+]
+description = "Streamlit components for general labeling"
+readme = "README.md"
+keywords = ["Python", "Streamlit", "React", "JavaScript"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+    "Programming Language :: Javascript",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.6"
+dependencies = [
+    "streamlit>=0.63",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/cmusatyalab/streamlit-label-kit"
+Repository = "https://github.com/cmusatyalab/streamlit-label-kit.git"
+Issues = "https://github.com/cmusatyalab/streamlit-label-kit/issues"
+
+[tool.setuptools]
+packages = ["streamlit_label_kit", "streamlit_label_kit.LabelToolKit"]
+
+[tool.setuptools.dynamic]
+version = {attr = "streamlit_label_kit.__version__"}
