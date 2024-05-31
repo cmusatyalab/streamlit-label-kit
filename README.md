@@ -27,7 +27,7 @@ Checkout example/demo.py
 
 run by 
 ```bash
-pip install streamlit-label-kit matplotlib
+pip install streamlit-label-kit
 streamlit run --server.headless True --server.fileWatcherType none example/demo.py 
 ```
 

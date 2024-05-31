@@ -1,6 +1,13 @@
-import streamlit as st
+#
+# Streamlit components for general labeling tasks
+#
+# Copyright (c) 2024 Carnegie Mellon University
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
 from glob import glob
-import pandas as pd
+
+import streamlit as st
 from streamlit_label_kit import detection, annotation
 
 mode = st.tabs(["Detection", "Classification"])

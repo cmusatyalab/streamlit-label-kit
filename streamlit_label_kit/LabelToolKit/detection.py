@@ -1,17 +1,22 @@
-import os
-import streamlit.components.v1 as components
-from streamlit.components.v1.components import CustomComponent
-from typing import List
+#
+# Streamlit components for general labeling tasks
+#
+# Copyright (c) 2024 Carnegie Mellon University
+# SPDX-License-Identifier: GPL-2.0-only
+#
 
-import streamlit as st
-import streamlit.elements.image as st_image
-from PIL import Image
-import numpy as np
-import matplotlib.pyplot as plt
+from __future__ import annotations
+
 from hashlib import md5
 from typing import Literal, Union
 
-from .__init__ import _component_func
+import matplotlib.pyplot as plt
+import numpy as np
+import streamlit.elements.image as st_image
+from PIL import Image
+from streamlit.components.v1.components import CustomComponent
+
+from . import _component_func
 
 
 def _get_colormap(label_names, colormap_name="gist_rainbow"):
@@ -122,19 +127,18 @@ def _calc_size(size):
     if isinstance(size, (int, float)):
         return size, size
 
-    match size:
-        case "small":
-            ui_height = UI_HEIGHT
-            ui_width = UI_WIDTH
-        case "medium":
-            ui_height = int(2 * UI_HEIGHT)
-            ui_width = int(1.25 * UI_WIDTH)
-        case "large":
-            ui_height = int(4 * UI_HEIGHT)
-            ui_width = int(1.5 * UI_WIDTH)
-        case _:
-            ui_height = int(2 * UI_HEIGHT)
-            ui_width = int(1.25 * UI_WIDTH)
+    if size == "small":
+        ui_height = UI_HEIGHT
+        ui_width = UI_WIDTH
+    elif size == "medium":
+        ui_height = int(2 * UI_HEIGHT)
+        ui_width = int(1.25 * UI_WIDTH)
+    elif size == "large":
+        ui_height = int(4 * UI_HEIGHT)
+        ui_width = int(1.5 * UI_WIDTH)
+    else:
+        ui_height = int(2 * UI_HEIGHT)
+        ui_width = int(1.25 * UI_WIDTH)
 
     return ui_height, ui_width
 
