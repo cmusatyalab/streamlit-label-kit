@@ -597,7 +597,6 @@ with mode[1]: # Classification
             
                     
             if (class_out1["key"] != st.session_state.class_dup_out1["key"] or class_out2["key"] != st.session_state.class_dup_out2["key"]):
-                print("compare class")
                 if class_out1["key"] != st.session_state.class_dup_out1["key"]:
                     st.session_state.class_dup_out1 = class_out1
                 if class_out2["key"] != st.session_state.class_dup_out2["key"]:
@@ -862,14 +861,11 @@ with mode[2]: #Segmentation
             
                     
             if (seg_out1["key"] != st.session_state.seg_dup_out1["key"] or seg_out2["key"] != st.session_state.seg_dup_out2["key"]):
-                print("compare seg")
 
                 if seg_out1["key"] != st.session_state.seg_dup_out1["key"]:
                     st.session_state.seg_dup_out1 = seg_out1
-                    print("compare seg1")
                 if seg_out2["key"] != st.session_state.seg_dup_out2["key"]:
                     st.session_state.seg_dup_out2 = seg_out2
-                    print("compare seg2")
                 
                 if st.session_state.seg_dup_out2["key"] > st.session_state.seg_dup_out1["key"]:  
                     st.session_state.seg_dup = st.session_state.seg_dup_out2["mask"]
