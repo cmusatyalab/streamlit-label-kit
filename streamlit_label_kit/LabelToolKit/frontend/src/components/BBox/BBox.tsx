@@ -9,7 +9,7 @@ export interface BBoxProps {
   fill: number,
   onClick: any,
   scale: number,
-  strokeWidth: number
+  strokeWidth: number,
   showLabel?: boolean,
   showAddiontal?: boolean,
   readOnly?: boolean,
@@ -53,7 +53,7 @@ export const BBox = (props: BBoxProps) => {
 
   return (
     <React.Fragment>
-      {moving || showLabel && <Text text={rectProps.label} x={rectProps.x * scale + 5} y={rectProps.y * scale + 5} fontSize={15} fill={rectProps.stroke}/>}
+      {moving || (showLabel && <Text text={rectProps.label} x={rectProps.x * scale + 5} y={rectProps.y * scale + 5} fontSize={15} fill={rectProps.stroke}/>)}
       {(!moving && showAddiontal && rectProps.additional_data) ? <Text text={concatenateInfo(rectProps.additional_data)} x={rectProps.x * scale + 5} y={rectProps.y * scale + (showLabel ? 15 : 0) + 5} fontSize={15} fill={rectProps.stroke} />
         : null}
       <Rect

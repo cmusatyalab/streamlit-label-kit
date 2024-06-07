@@ -1,33 +1,12 @@
-// export interface PythonArgs {
-//   image_url: string,
-//   image_size: number[],
-//   ui_width: number,
-//   ui_height: number,
-//   label_list?: string[],
-
-//   bbox_info?: any[],
-//   color_map?: any,
-//   line_width?: number,
-  
-//   default_label_idx?: number,
-//   vertical_layout?: boolean;
-//   select_list?: boolean;
-//   multi_select?: boolean;
-//   default_multi_label_list?: string[];
-
-//   label_type: "classification" | "detection" | "tag"
-// }
-
 export type PythonArgs = CommmonArgs & DetectionArgs & ClassificationArgs & DevArgs;
 
 export interface CommmonArgs {
   image_url: string,
   image_size: number[],
-  // ui_width?: number | string,
-  // ui_height?: number,
   label_list?: string[],
   read_only?: boolean,
   label_type: "annotation" | "detection" | "segmentation"
+  justify_content?: "center" | "start" | "end"
 };
 
 export interface DevArgs {
@@ -46,10 +25,17 @@ export interface DevArgs {
 
 export interface DetectionArgs {
   bbox_info?: any[],
+  additional_bbox?: any[],
   color_map?: any,
   line_width?: number,
   bbox_show_additional?: boolean,
   bbox_show_label?: boolean,
+}
+
+export interface SegmentationArgs {
+  masks_info?: any[],
+  color_map?: any,
+  auto_seg_mode?: boolean,
 }
 
 export interface ClassificationArgs {

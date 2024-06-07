@@ -2,15 +2,15 @@ import React, { useState, useEffect, useCallback } from "react"
 import { Layer, Rect, Stage, Image } from 'react-konva';
 import {BBox} from '../BBox'
 import Konva from 'konva';
-import { Container } from "konva/lib/Container";
+import {Rectangle} from "../../utils/Rectangle";
 
 export interface BBoxCanvasLayerProps {
-  rectangles: any[],
+  rectangles: Rectangle[],
   mode: string,
   selectedId: string | null,
-  setSelectedId: any,
-  setRectangles: any,
-  setLabel: any,
+  setSelectedId: (selected: string | null) => void,
+  setRectangles: (rect: Rectangle[]) => void,
+  setLabel: (label: string) => void,
   color_map: any,
   scale: number,
   label: string,
@@ -27,8 +27,6 @@ const MOVE_PIXEL = 5;
 const KEY_NAMES = new Set<string>([
   "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Escape",
 ])
-
-let keyState: { [key: string]: boolean } = {}
 
 export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
   const {
@@ -60,7 +58,7 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
         }
       }
     }
-  }, [mode, setSelectedId, setAdding]);
+  }, [mode, setSelectedId, setAdding, readOnly]);
 
   const handleKeyInteraction = useCallback((e: KeyboardEvent) => {
     if (e.type !== "keydown") {
@@ -101,7 +99,7 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
       setRectangles(rects);
     }
     e.preventDefault();
-  }, [rectangles, selectedId, setRectangles, setSelectedId, scale]);
+  }, [rectangles, selectedId, setRectangles, setSelectedId, scale, readOnly]);
 
   useEffect(() => {
     const rects = rectangles.slice();
@@ -141,7 +139,7 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
       window.removeEventListener('keydown', handleKeyInteraction);
       window.removeEventListener('keyup', handleKeyInteraction);
     };
-  }, [rectangles, image_size, selectedId, handleKeyInteraction])
+  }, [rectangles, image_size, selectedId, handleKeyInteraction, setRectangles])
 
   return (
     <Stage 
@@ -174,8 +172,8 @@ export const BBoxCanvas = (props: BBoxCanvasLayerProps) => {
               stroke: color_map[label],
               meta: []
             };
-            setRectangles([...rectangles, newRect]);
             setSelectedId(newRect.id);
+            setRectangles([...rectangles, newRect]);
           }
           setAdding(null);
       }}}

@@ -1,8 +1,7 @@
 import {
   Streamlit,
-  ComponentProps
 } from "streamlit-component-lib"
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState } from "react"
 import { SelectChangeEvent } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -37,6 +36,7 @@ export const Classification = ( args : PythonArgs) => {
     ui_width = "100%",
     ui_height,
     read_only = false,
+    justify_content = "start",
   }: CommmonArgs & ClassificationArgs = args
 
   let left_width: number = 0;
@@ -51,7 +51,7 @@ export const Classification = ( args : PythonArgs) => {
     switch (class_select_position) {
       case "left":
         left_width = ui_left_size;
-        if (class_select_type == "radio") {
+        if (class_select_type === "radio") {
           left_meta_num += 1;
         } else {
           left_height += _CLASS_SELECT_HEIGHT + _SPACE;
@@ -59,7 +59,7 @@ export const Classification = ( args : PythonArgs) => {
         break;
       case "right":
         right_width = ui_right_size;
-        if (class_select_type == "radio") {
+        if (class_select_type === "radio") {
           right_meta_num += 1;
         } else {
           right_height += _CLASS_SELECT_HEIGHT + _SPACE;
@@ -112,16 +112,28 @@ export const Classification = ( args : PythonArgs) => {
   const [labels, setLabels] = useState<string[]>(default_multi_label_list)
   const [meta, setMeta] = useState<string[]>(meta_info)
 
-
-  const updateMeta = useCallback((newMeta: string[]) => {
+  const updateMeta = (newMeta: string[]) => {
     setMeta(newMeta)
-    Streamlit.setComponentValue({ 'label': multi_select ? labels : label, 'meta': newMeta })
-  }, [meta, setMeta]);
+    Streamlit.setComponentValue({ 'label': multi_select ? labels : label, 'meta': newMeta, 'key': Date.now().toString().slice(-8)})
+  };
 
-  const updateDescription = useCallback((newDescription: string) => {
+  const updateDescription = (newDescription: string) => {
     setMeta([newDescription])
-    Streamlit.setComponentValue({ 'label': multi_select ? labels : label, 'meta': [newDescription] })
-  }, [meta, setMeta]);
+    Streamlit.setComponentValue({ 'label': multi_select ? labels : label, 'meta': [newDescription], 'key': Date.now().toString().slice(-8) })
+  }
+
+  useEffect(() => {
+    setMeta(meta_info);
+
+    if (multi_select){
+      setLabels(default_multi_label_list)
+      Streamlit.setComponentValue({'label': default_multi_label_list, 'meta': meta_info, 'key': Date.now().toString().slice(-8)})
+    } else {
+      setLabel(label_list[default_label_idx])
+      Streamlit.setComponentValue({'label': label_list[default_label_idx], 'meta': meta_info, 'key': Date.now().toString().slice(-8)})
+    }
+    
+  }, [label_list, default_label_idx, default_multi_label_list, meta_info, multi_select]);
 
   const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     let result = [...labels];
@@ -133,20 +145,20 @@ export const Classification = ( args : PythonArgs) => {
       result = result.filter(i => i !== event.target.name);
     }
     setLabels(result)
-    Streamlit.setComponentValue({ 'label': result, 'meta': meta  })
+    Streamlit.setComponentValue({ 'label': result, 'meta': meta, 'key': Date.now().toString().slice(-8)})
   };
 
   const handleChange = (event: SelectChangeEvent<string | string[]>) => {
     const value = event.target.value;
     setLabel(typeof value === 'string' ? value : value.join(', '));
-    Streamlit.setComponentValue({ 'label': value, 'meta': meta });
+    Streamlit.setComponentValue({ 'label': value, 'meta': meta, 'key': Date.now().toString().slice(-8) });
   };
   
   const handleChangeMulti = (event: SelectChangeEvent<string | string[]>) => {
     const value = event.target.value;
     const result = typeof value === 'string' ? value.split(',') : value;
     setLabels(result);
-    Streamlit.setComponentValue({ 'label': result, 'meta': meta });
+    Streamlit.setComponentValue({ 'label': result, 'meta': meta, 'key': Date.now().toString().slice(-8) });
   };
 
 
@@ -163,7 +175,7 @@ export const Classification = ( args : PythonArgs) => {
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas()
-  }, [image_size])
+  }, [image_size, left_width, right_width, UI_HEIGHT, bottom_height])
 
   let buttom_ui_width: number | string = image_size[0] !== 0 ? image_size[0] * scale : UI_WIDTH ;
 
@@ -289,7 +301,7 @@ export const Classification = ( args : PythonArgs) => {
     <Box>
       <Stack
         direction="row"
-        justifyContent="center"
+        justifyContent={justify_content}
         alignItems="start"
       >
         {left_width !== 0 ? <RenderUi pos={"left"}/> : null}

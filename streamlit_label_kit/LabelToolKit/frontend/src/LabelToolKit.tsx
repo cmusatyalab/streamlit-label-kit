@@ -2,7 +2,6 @@ import {
   withStreamlitConnection,
   ComponentProps
 } from "streamlit-component-lib"
-import React from "react"
 import { PythonArgs } from './utils'
 import { Detection, Classification, Segmentation} from './label-tool'
 
@@ -18,13 +17,7 @@ const LabelToolKit = ({ args, theme }: ComponentProps) => {
       return (Classification(args));
     case "segmentation":
       return (Segmentation(args));
-
-    // case "tag":
-    //   return (LabelTag(args));
-
-    // "Segmentation"
     default:
-
       return null;
   }
 }

@@ -1,17 +1,14 @@
-import React, {useCallback, useEffect} from "react"
+import React, {useEffect} from "react"
 
 import { BaseComponentProps } from '../../utils/BaseComponent';
 import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
 import SaveAsOutlinedIcon from '@mui/icons-material/SaveAsOutlined';
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import Input from '@mui/material/Input';
 import InputBase from '@mui/material/InputBase';
 import Paper from '@mui/material/Paper';
-
 
 interface DescriptionProps extends BaseComponentProps {
   disabled?: boolean;
@@ -19,9 +16,6 @@ interface DescriptionProps extends BaseComponentProps {
   paddingLeft?: string | number;
   setDescription?: (value: string) => void;
 }
-
-let CONST_HEIGHT : number = 10;
-let ROW_HEIGHT : number = 14;
 
 export const Description = ({
   width = "100%",

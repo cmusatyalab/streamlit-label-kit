@@ -1,9 +1,7 @@
 import {
   Streamlit,
-  withStreamlitConnection,
-  ComponentProps
 } from "streamlit-component-lib"
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState } from "react"
 import { SelectChangeEvent } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -11,7 +9,6 @@ import useImage from 'use-image';
 import { BBoxCanvas, ItemList, ClassSelect, ItemInfo, ClassRadio } from '../components';
 import { BaseItem, Rectangle, PythonArgs } from '../utils'
 import { CommmonArgs, DetectionArgs, DevArgs } from "../utils";
-import { PassThrough } from "stream";
 
 const _CLASS_SELECT_HEIGHT = 41 + 6;
 const _SPACE = 8;
@@ -38,6 +35,7 @@ export const Detection = (args: PythonArgs) => {
     read_only = false,
     bbox_show_additional = false,
     bbox_show_label = false,
+    justify_content = "start",
   }: CommmonArgs & DetectionArgs & DevArgs = args
 
   let left_width: number = 0;
@@ -53,7 +51,7 @@ export const Detection = (args: PythonArgs) => {
   switch (class_select_position) {
     case "left":
       left_width = ui_left_size;
-      if (class_select_type == "radio") {
+      if (class_select_type === "radio") {
         left_item_num += 1;
       } else {
         left_height += _CLASS_SELECT_HEIGHT + _SPACE;
@@ -61,7 +59,7 @@ export const Detection = (args: PythonArgs) => {
       break;
     case "right":
       right_width = ui_right_size;
-      if (class_select_type == "radio") {
+      if (class_select_type === "radio") {
         right_item_num += 1;
       } else {
         right_height += _CLASS_SELECT_HEIGHT + _SPACE;
@@ -127,10 +125,10 @@ export const Detection = (args: PythonArgs) => {
         width: bb.bbox[2],
         height: bb.bbox[3],
         label: bb.label,
-        stroke: color_map[bb.label],
-        id: 'bbox-' + i,
-        meta: bb.meta,
-        additional_data: bb.additional_data,
+        stroke: color_map[bb.label] || '#000',
+        id: bb.id,
+        meta: bb.meta || [],
+        additional_data: bb.additional_data || {},
       }
     }));
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
@@ -148,37 +146,27 @@ export const Detection = (args: PythonArgs) => {
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas()
-  }, [image_size])
+  }, [image_size, left_width, right_width, bottom_height])
 
-  const setStreamlitOutput = (rects: {
-    x: any;
-    y: any;
-    width: any;
-    height: any;
-    label: any;
-    stroke: any;
-    id: string;
-    meta: string[];
-  }[],
-    selected: string | null
-  ) => {
+  const setStreamlitOutput = (rects: Rectangle[]) => {
     const currentBboxValue = rects.map((rect, i) => {
       return {
         bbox: [rect.x, rect.y, rect.width, rect.height],
         label_id: label_list.indexOf(rect.label),
         label: rect.label,
-        meta: rect.meta
+        id: rect.id,
+        meta: rect.meta || [],
+        additional_data: rect.additional_data || {},
       }
     })
-    let selectedRect = rects.filter((rct) => rct.id === selected)
+
     Streamlit.setComponentValue({
       "bbox": currentBboxValue,
-      "selected": selectedRect.length === 0 ? null : selectedRect[0],
-      "scale": scale
+      "key": Date.now().toString().slice(-8),
     })
   }
 
-  const updateRectangle = useCallback((rects: {
+  const updateRectangle = (rects: {
     x: any;
     y: any;
     width: any;
@@ -198,10 +186,36 @@ export const Detection = (args: PythonArgs) => {
       }
     } 
 
-    setStreamlitOutput(rects, selectedId);
-  }, [selectedId, setRectangles, setLabel, setSelectedItem]);
+    setStreamlitOutput(rects);
+  };
 
-  const updateSelected = useCallback((selected: string | null) => {
+  useEffect(() => {
+    const newRectangles = bbox_info.map(bb => ({
+      x: bb.bbox[0],
+      y: bb.bbox[1],
+      width: bb.bbox[2],
+      height: bb.bbox[3],
+      label: bb.label,
+      stroke: color_map[bb.label] || '#000',
+      id: bb.id,
+      meta: bb.meta || [],
+      additional_data: bb.additional_data || {},
+    }));
+    
+    setRectangles(newRectangles);
+
+    if (selectedId !== null) {
+      let index = newRectangles.findIndex(rect => rect.id === selectedId);
+      if (index !== -1) {
+        setLabel(newRectangles[index].label)
+        setSelectedItem(newRectangles[index])
+      }
+    } 
+
+    setStreamlitOutput(newRectangles);
+  }, [bbox_info, color_map]);
+
+  const updateSelected = (selected: string | null) => {
     setSelectedId(selected)
 
     const rects = [...rectangles];
@@ -212,24 +226,21 @@ export const Detection = (args: PythonArgs) => {
     } else {
       setSelectedItem(null)
     }
-  
-    setStreamlitOutput(rectangles, selected);
+  };
 
-  }, [rectangles, setSelectedId, setStreamlitOutput, setSelectedItem]);
-
-  const handleDelete = useCallback((id: string) => {
+  const handleDelete = (id: string) => {
     const rects = [...rectangles];
     let index = rects.findIndex(rect => rect.id === id);
-    if (index != -1) {
+    if (index !== -1) {
       rects.splice(index, 1);
     }
 
     updateRectangle(rects);
     updateSelected(null);
-    setStreamlitOutput(rects, selectedId);
-  }, [rectangles, selectedId, updateRectangle, updateSelected, setStreamlitOutput]);
+    setStreamlitOutput(rects);
+  };
 
-  const handleClassSelectorChange = useCallback((event: SelectChangeEvent<string>) => {
+  const handleClassSelectorChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
 
     setLabel(value)
@@ -237,15 +248,15 @@ export const Detection = (args: PythonArgs) => {
     if (!(selectedId === null)) {
       const rects = [...rectangles];
       let index = rects.findIndex(rect => rect.id === selectedId);
-      if (index != -1) {
+      if (index !== -1) {
         rects[index].label = value;
         rects[index].stroke = color_map[value];
       }
       updateRectangle(rects)
     }
-  }, [rectangles, selectedId, setLabel, updateRectangle]);
+  };
 
-  const updateItem = useCallback((newItem: BaseItem) => {
+  const updateItem = (newItem: BaseItem) => {
     if (selectedId) {
       const rects = [...rectangles];
       let index = rects.findIndex(rect => rect.id === selectedId);
@@ -256,7 +267,7 @@ export const Detection = (args: PythonArgs) => {
       setSelectedId(newItem.id);
       updateRectangle(rects);
     }
-  }, [setSelectedId, updateRectangle, rectangles, selectedId]);
+  };
 
   const ClassSelectRender = ({ marginTop, width = "calc(100%)" }: { marginTop?: number | string , width?: number|string }) => {
     return (
@@ -364,7 +375,7 @@ export const Detection = (args: PythonArgs) => {
     <Box>
       <Stack
         direction="row"
-        justifyContent="center"
+        justifyContent={justify_content}
         alignItems="start"
       >
 
