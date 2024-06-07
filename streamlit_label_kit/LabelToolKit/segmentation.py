@@ -1,17 +1,19 @@
-import os
-import streamlit.components.v1 as components
-from streamlit.components.v1.components import CustomComponent
-from typing import List
+#
+# Streamlit components for general labeling tasks
+#
+# Copyright (c) 2024 Carnegie Mellon University
+# SPDX-License-Identifier: GPL-2.0-only
+#
 
-import streamlit as st
+from __future__ import annotations
+from hashlib import md5
+from typing import Literal, Union, List, Dict
+import matplotlib.pyplot as plt
+import numpy as np
 import streamlit.elements.image as st_image
 from PIL import Image
-import numpy as np
-import matplotlib.pyplot as plt
-from hashlib import md5
-from typing import Literal, Union
-
-from . import _component_func
+from streamlit.components.v1.components import CustomComponent
+from . import _component_func, convert_bbox_format, relative_to_absolute, absolute_to_relative
 
 
 def _get_colormap(label_names, colormap_name="gist_rainbow"):
@@ -28,113 +30,22 @@ RADIO_HEGIHT = 34
 UI_HEIGHT = 34
 UI_WIDTH = 198
 
-#'''
-# bboxes:
-# [[x,y,w,h],[x,y,w,h]]
-# labels:
-# [0,3]
-#'''
-
-
-def convert_bbox_format(
-    bbox: tuple[float, float, float, float],
-    input_format: Literal["XYWH", "XYXY", "CXYWH"],
-    output_format: Literal["XYWH", "XYXY", "CXYWH"],
-) -> tuple[float, float, float, float]:
-    """
-    Convert bounding box between specified formats.
-
-    Args:
-    bbox (Tuple[float, float, float, float]): The bounding box coordinates.
-    input_format (str): The format of the input bounding box.
-    output_format (str): The format to convert the bounding box to.
-
-    Returns:
-    Tuple[float, float, float, float]: The bounding box in the new format.
-    """
-    if input_format == output_format:
-        return bbox
-
-    x, y, w, h = 0, 0, 0, 0
-
-    # Unpack the bounding box based on the input format
-    if input_format == "XYXY":
-        x1, y1, x2, y2 = bbox
-        x, y, w, h = x1, y1, x2 - x1, y2 - y1
-    elif input_format == "XYWH":
-        x, y, w, h = bbox
-    elif input_format == "CXYWH":
-        cx, cy, w, h = bbox
-        x, y = cx - w / 2, cy - h / 2
-
-    # Convert to the output format
-    if output_format == "XYXY":
-        x1, y1, x2, y2 = x, y, x + w, y + h
-        return (x1, y1, x2, y2)
-    elif output_format == "XYWH":
-        return (x, y, w, h)
-    elif output_format == "CXYWH":
-        cx, cy = x + w / 2, y + h / 2
-        return (cx, cy, w, h)
-
-
-def relative_to_absolute(
-    bbox: tuple[float, float, float, float], image_width: int, image_height: int
-) -> tuple[float, float, float, float]:
-    """
-    Convert relative bbox coordinates to absolute pixel coordinates.
-
-    Args:
-    bbox (Tuple[float, float, float, float]): The bounding box in relative format.
-    image_width (int): The width of the image in pixels.
-    image_height (int): The height of the image in pixels.
-
-    Returns:
-    Tuple[float, float, float, float]: The bounding box in absolute pixel coordinates.
-    """
-    rx1, ry1, rx2, ry2 = bbox  # Assuming bbox in format REL_XYXY
-    ax1, ay1 = rx1 * image_width, ry1 * image_height
-    ax2, ay2 = rx2 * image_width, ry2 * image_height
-    return (ax1, ay1, ax2, ay2)
-
-
-def absolute_to_relative(
-    bbox: tuple[float, float, float, float], image_width: int, image_height: int
-) -> tuple[float, float, float, float]:
-    """
-    Convert absolute pixel bbox coordinates to relative coordinates.
-
-    Args:
-    bbox (Tuple[float, float, float, float]): The bounding box in absolute pixel format.
-    image_width (int): The width of the image in pixels.
-    image_height (int): The height of the image in pixels.
-
-    Returns:
-    Tuple[float, float, float, float]: The bounding box in relative coordinates.
-    """
-    ax1, ay1, ax2, ay2 = bbox  # Assuming bbox in format XYXY
-    rx1, ry1 = ax1 / image_width, ay1 / image_height
-    rx2, ry2 = ax2 / image_width, ay2 / image_height
-    return (rx1, ry1, rx2, ry2)
-
-
 def _calc_size(size):
     if isinstance(size, (int, float)):
         return size, size
-
-    match size:
-        case "small":
-            ui_height = UI_HEIGHT
-            ui_width = UI_WIDTH
-        case "medium":
-            ui_height = int(2 * UI_HEIGHT)
-            ui_width = int(1.25 * UI_WIDTH)
-        case "large":
-            ui_height = int(4 * UI_HEIGHT)
-            ui_width = int(1.5 * UI_WIDTH)
-        case _:
-            ui_height = int(2 * UI_HEIGHT)
-            ui_width = int(1.25 * UI_WIDTH)
+            
+    if size == "small":
+        ui_height = UI_HEIGHT
+        ui_width = UI_WIDTH
+    elif size == "medium":
+        ui_height = int(2 * UI_HEIGHT)
+        ui_width = int(1.25 * UI_WIDTH)
+    elif size == "large":
+        ui_height = int(4 * UI_HEIGHT)
+        ui_width = int(1.5 * UI_WIDTH)
+    else:
+        ui_height = int(2 * UI_HEIGHT)
+        ui_width = int(1.25 * UI_WIDTH)
 
     return ui_height, ui_width
 
@@ -146,8 +57,8 @@ def segmentation(
     mask_ids=[],
     labels=[],
     read_only=False,
-    info_dict: list[dict[str:str]] = [],
-    meta_data: list[list[str]] = [],
+    info_dict: List[Dict[str:str]] = [],
+    meta_data: List[List[str]] = [],
     bbox_format: Literal["XYWH", "XYXY", "CXYWH", "REL_XYWH", "REL_XYXY", "REL_CXYWH"] = "XYWH",
     image_height=512,
     image_width=512,

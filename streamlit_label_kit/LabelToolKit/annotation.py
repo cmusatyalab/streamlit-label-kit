@@ -1,14 +1,20 @@
-from streamlit.components.v1.components import CustomComponent
-from typing import List
+#
+# Streamlit components for general labeling tasks
+#
+# Copyright (c) 2024 Carnegie Mellon University
+# SPDX-License-Identifier: GPL-2.0-only
+#
 
+from __future__ import annotations
+from hashlib import md5
+from typing import Literal, Union, List
+import matplotlib.pyplot as plt
+import numpy as np
 import streamlit.elements.image as st_image
 from PIL import Image
-import numpy as np
-import matplotlib.pyplot as plt
-from hashlib import md5
-from typing import Literal, Union
-
+from streamlit.components.v1.components import CustomComponent
 from . import _component_func
+
 
 def get_colormap(label_names, colormap_name="gist_rainbow"):
     colormap = {}
@@ -26,27 +32,26 @@ UI_WIDTH = 168
 def _calc_size(size) :
     if isinstance(size, (int, float)):
         return size, size
-    
-    match size:
-        case "small":
-            ui_height = UI_HEIGHT
-            ui_width = UI_WIDTH
-        case "medium":
-            ui_height = int(2 * UI_HEIGHT)
-            ui_width = int(1.25 * UI_WIDTH)
-        case "large":
-            ui_height = int(4 * UI_HEIGHT)
-            ui_width = int(1.5 * UI_WIDTH)
-        case _:
-            ui_height = int(2 * UI_HEIGHT)
-            ui_width = int(1.25 * UI_WIDTH)
+            
+    if size == "small":
+        ui_height = UI_HEIGHT
+        ui_width = UI_WIDTH
+    elif size == "medium":
+        ui_height = int(2 * UI_HEIGHT)
+        ui_width = int(1.25 * UI_WIDTH)
+    elif size == "large":
+        ui_height = int(4 * UI_HEIGHT)
+        ui_width = int(1.5 * UI_WIDTH)
+    else:
+        ui_height = int(2 * UI_HEIGHT)
+        ui_width = int(1.25 * UI_WIDTH)
     
     return ui_height, ui_width
 
 def annotation(
     image_path: str = None,
-    label_list: list[str] = [],
-    label_index: Union[int, list[int]]=None,
+    label_list: List[str] = [],
+    label_index: Union[int, List[int]]=None,
     image_height: int=512,
     image_width: int=512,
     classification: bool = False,
@@ -57,7 +62,7 @@ def annotation(
     class_select_type: Literal["select", "radio"] = "radio",
     meta_editor: bool = False,
     edit_description: bool = False,
-    meta_data: list[str] = [],
+    meta_data: List[str] = [],
     ui_size: Literal["small", "medium", "large"]= "small",
     ui_left_size: Union[Literal["small", "medium", "large"], int] = None,
     ui_bottom_size: Union[Literal["small", "medium", "large"], int] = None,

@@ -1,6 +1,12 @@
+#
+# Streamlit components for general labeling tasks
+#
+# Copyright (c) 2024 Carnegie Mellon University
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
 import streamlit as st
 from glob import glob
-import pandas as pd
 from streamlit_label_kit import detection, annotation, segmentation, absolute_to_relative, convert_bbox_format, are_bboxes_equal
 
 def wide_space_default():
