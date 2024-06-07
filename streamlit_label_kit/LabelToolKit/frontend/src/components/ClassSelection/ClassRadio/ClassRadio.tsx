@@ -1,6 +1,6 @@
 import React from "react"
 
-import { ClassSelectorProps, SelectValue } from '../ClassSelectorComponent';
+import { ClassSelectorProps } from '../ClassSelectorComponent';
 import { BaseComponentProps } from '../../../utils/BaseComponent';
 
 import FormControl from '@mui/material/FormControl';
