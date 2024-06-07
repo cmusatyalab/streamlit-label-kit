@@ -204,7 +204,7 @@ export const Segmentation = (args: PythonArgs) => {
       }
     } 
 
-    setStreamlitOutput(newMasks);
+    // setStreamlitOutput(newMasks);
   }, [masks_info]);
 
   const handleShapeChange = (value: string) => {

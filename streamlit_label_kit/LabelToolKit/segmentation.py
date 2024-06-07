@@ -248,10 +248,10 @@ def segmentation(
     
     _bboxes = []
     _masks = []
-    
+    key = 0
     if component_value is not None:    
         bboxes = component_value["new"]
-        key = component_value["key"]
+        key = int(component_value["key"])
         masks = component_value["mask"]
                 
         _bboxes = [

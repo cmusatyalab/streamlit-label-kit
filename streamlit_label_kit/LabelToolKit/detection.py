@@ -247,9 +247,10 @@ def detection(
     )
     
     _bboxes = []
+    key = 0
     if component_value is not None:
         bboxes = component_value["bbox"]
-        key = component_value["key"]
+        key = int(component_value["key"])
         _bboxes = [
             {
                 "bboxes": [b * scale for b in item["bbox"]],

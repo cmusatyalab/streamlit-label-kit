@@ -127,10 +127,10 @@ export const Classification = ( args : PythonArgs) => {
 
     if (multi_select){
       setLabels(default_multi_label_list)
-      Streamlit.setComponentValue({'label': default_multi_label_list, 'meta': meta_info, 'key': Date.now().toString().slice(-8)})
+      // Streamlit.setComponentValue({'label': default_multi_label_list, 'meta': meta_info, 'key': Date.now().toString().slice(-8)})
     } else {
       setLabel(label_list[default_label_idx])
-      Streamlit.setComponentValue({'label': label_list[default_label_idx], 'meta': meta_info, 'key': Date.now().toString().slice(-8)})
+      // Streamlit.setComponentValue({'label': label_list[default_label_idx], 'meta': meta_info, 'key': Date.now().toString().slice(-8)})
     }
     
   }, [label_list, default_label_idx, default_multi_label_list, meta_info, multi_select]);

@@ -212,7 +212,7 @@ export const Detection = (args: PythonArgs) => {
       }
     } 
 
-    setStreamlitOutput(newRectangles);
+    // setStreamlitOutput(newRectangles);
   }, [bbox_info, color_map]);
 
   const updateSelected = (selected: string | null) => {

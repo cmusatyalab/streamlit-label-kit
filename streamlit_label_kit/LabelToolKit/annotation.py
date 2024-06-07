@@ -200,4 +200,14 @@ def annotation(
         label_type="annotation"
     )
     
-    return component_value
+    key = 0
+    label = []
+    meta = []
+    if component_value:
+        label = component_value["label"]
+        key = int(component_value["key"])
+        meta = component_value["meta"]
+    result = {"label": label, "meta": meta, "key": key}
+        
+    
+    return result

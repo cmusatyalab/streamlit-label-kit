@@ -7,7 +7,7 @@
 
 import streamlit as st
 from glob import glob
-from streamlit_label_kit import detection, annotation, segmentation, absolute_to_relative, convert_bbox_format, are_bboxes_equal
+from streamlit_label_kit import detection, annotation, segmentation, absolute_to_relative, convert_bbox_format
 
 def wide_space_default():
     st.set_page_config(layout="wide")
@@ -263,10 +263,10 @@ with mode[0]:
                 st.session_state.result_dup = []
                 
             if "result_dup_out1" not in st.session_state:
-                st.session_state.result_dup_out1 = {"key": "", "bbox": []}
+                st.session_state.result_dup_out1 = {"key": "0", "bbox": []}
                 
             if "result_dup_out2" not in st.session_state:
-                st.session_state.result_dup_out2 = {"key": "", "bbox": []}
+                st.session_state.result_dup_out2 = {"key": "0", "bbox": []}
                 
             data = st.session_state.result_dup or []
                                     
@@ -318,7 +318,7 @@ with mode[0]:
                     key="detection_dup2"
                 )
                 test_out2
-                    
+            
             if (test_out1["key"] != st.session_state.result_dup_out1["key"] or test_out2["key"] != st.session_state.result_dup_out2["key"]):
                 if test_out1["key"] != st.session_state.result_dup_out1["key"]:
                     st.session_state.result_dup_out1["key"] = test_out1["key"]
@@ -326,6 +326,7 @@ with mode[0]:
                 if test_out2["key"] != st.session_state.result_dup_out2["key"]:
                     st.session_state.result_dup_out2["key"] = test_out2["key"]
                     st.session_state.result_dup_out2["bbox"] = test_out2["bbox"]
+                
                 
                 if st.session_state.result_dup_out2["key"] > st.session_state.result_dup_out1["key"]:  
                     st.session_state.result_dup = st.session_state.result_dup_out2["bbox"]
@@ -549,12 +550,12 @@ with mode[1]: # Classification
                 st.session_state.class_dup = []
                 
             if "class_dup_out1" not in st.session_state:
-                st.session_state.class_dup_out1 = {"key": "", "label": "", "meta": []}
+                st.session_state.class_dup_out1 = {"key": "0", "label": "", "meta": []}
                 
             if "class_dup_out2" not in st.session_state:
-                st.session_state.class_dup_out2 = {"key": "", "label": "", "meta": []}
+                st.session_state.class_dup_out2 = {"key": "0", "label": "", "meta": []}
                 
-            _label = st.session_state.class_dup or {"key": "", "label": "", "meta": []}
+            _label = st.session_state.class_dup or {"key": "0", "label": "", "meta": []}
                        
             try:
                 index = _label_list.index(_label["label"])
@@ -576,7 +577,7 @@ with mode[1]: # Classification
                     class_select_type = _class_select_type,
                     meta_editor = True,
                     key="class_dup1",
-                ) or {"key": "", "label": "", "meta": []}
+                ) or {"key": "0", "label": "", "meta": []}
                 class_out1
             
             with c2:
@@ -591,11 +592,12 @@ with mode[1]: # Classification
                     class_select_type = _class_select_type,
                     meta_editor = True,
                     key="class_dup2",
-                ) or {"key": "", "label": "", "meta": []}
+                ) or {"key": "0", "label": "", "meta": []}
                 class_out2
             
                     
             if (class_out1["key"] != st.session_state.class_dup_out1["key"] or class_out2["key"] != st.session_state.class_dup_out2["key"]):
+                print("compare class")
                 if class_out1["key"] != st.session_state.class_dup_out1["key"]:
                     st.session_state.class_dup_out1 = class_out1
                 if class_out2["key"] != st.session_state.class_dup_out2["key"]:
@@ -811,10 +813,10 @@ with mode[2]: #Segmentation
                 st.session_state.seg_dup = []
                 
             if "seg_dup_out1" not in st.session_state:
-                st.session_state.seg_dup_out1 = {"key": "", "mask": []}
+                st.session_state.seg_dup_out1 = {"key": "0", "mask": []}
                 
             if "seg_dup_out2" not in st.session_state:
-                st.session_state.seg_dup_out2 = {"key": "", "mask": []}
+                st.session_state.seg_dup_out2 = {"key": "0", "mask": []}
                 
             data = st.session_state.seg_dup or []
                        
@@ -838,7 +840,7 @@ with mode[2]: #Segmentation
                     # item_selector=False,
                     edit_meta=True,
                     key="seg_dup1",
-                ) or {"key": "", "mask":[]}
+                )
                 # seg_out1
             
             with c2:
@@ -855,15 +857,19 @@ with mode[2]: #Segmentation
                     item_selector=True,
                     edit_meta=True,
                     key="seg_dup2",
-                ) or {"key": "", "mask":[]}
+                )
                 # seg_out2
             
                     
             if (seg_out1["key"] != st.session_state.seg_dup_out1["key"] or seg_out2["key"] != st.session_state.seg_dup_out2["key"]):
+                print("compare seg")
+
                 if seg_out1["key"] != st.session_state.seg_dup_out1["key"]:
                     st.session_state.seg_dup_out1 = seg_out1
-                if class_out2["key"] != st.session_state.seg_dup_out2["key"]:
+                    print("compare seg1")
+                if seg_out2["key"] != st.session_state.seg_dup_out2["key"]:
                     st.session_state.seg_dup_out2 = seg_out2
+                    print("compare seg2")
                 
                 if st.session_state.seg_dup_out2["key"] > st.session_state.seg_dup_out1["key"]:  
                     st.session_state.seg_dup = st.session_state.seg_dup_out2["mask"]
