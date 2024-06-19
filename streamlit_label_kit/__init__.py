@@ -10,4 +10,4 @@ from .LabelToolKit.detection import detection
 from .LabelToolKit.annotation import annotation
 from .LabelToolKit.segmentation import segmentation
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
