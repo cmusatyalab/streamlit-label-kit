@@ -307,6 +307,7 @@ def segmentation(
         return {
                 "mask": _masks,
                 "mask_size": resized_image_size,
+                "resized_image_size": resized_image_size,
                 "image_size": original_image_size,
                 "key": key,
             }

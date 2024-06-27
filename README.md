@@ -149,6 +149,7 @@ Output Format:
                 }
             ],
             "image_size": (int, int), # Original dimensions of the input image
+            "resized_image_size": (int, int), # Resized dimensions of the input image
             "bbox_format": str,      # Format of the bounding box data
             "key": str               # Unique identifier for the returned value
         }
@@ -219,6 +220,7 @@ Output Format:
             "mask": [List of mask objects],
             "mask_size": (int, int),  # Size of the resized image masks
             "image_size": (int, int), # Original dimensions of the input image
+            "resized_image_size": (int, int), # Resized dimensions of the input image
             "key": str                # Unique identifier for the returned value
         }
 ```

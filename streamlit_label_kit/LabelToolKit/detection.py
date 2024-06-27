@@ -287,6 +287,7 @@ def detection(
     return {
         "bbox": _bboxes,
         "image_size": original_image_size,
+        "resized_image_size": resized_image_size,
         "bbox_format": bbox_format,
         "key": key,
     }
