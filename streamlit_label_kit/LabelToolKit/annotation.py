@@ -119,6 +119,8 @@ def annotation(
     
     if (image_path):
         image = Image.open(image_path)
+        image = image.resize((image_width, image_height))
+
         image.thumbnail(size=(image_width, image_height))
     
     if (not classification and not meta_editor):

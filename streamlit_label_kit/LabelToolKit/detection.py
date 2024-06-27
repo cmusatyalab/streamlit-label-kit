@@ -141,6 +141,7 @@ def detection(
     # Load Image and convert size
     image = Image.open(image_path)
     original_image_size = image.size
+    image = image.resize((image_width, image_height))
     image.thumbnail(size=(image_width, image_height))
 
     image_url = st_image.image_to_url(
@@ -155,6 +156,7 @@ def detection(
         image_url = image_url[1:]
 
     color_map = _get_colormap(label_list, colormap_name="gist_rainbow")
+    
 
     resized_image_size = image.size
     scale = original_image_size[0] / resized_image_size[0]

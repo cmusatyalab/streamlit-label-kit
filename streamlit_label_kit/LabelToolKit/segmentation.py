@@ -155,6 +155,8 @@ def segmentation(
     # Load Image and convert size
     image = Image.open(image_path)
     original_image_size = image.size
+    image = image.resize((image_width, image_height))
+
     image.thumbnail(size=(image_width, image_height))
 
     image_url = st_image.image_to_url(
