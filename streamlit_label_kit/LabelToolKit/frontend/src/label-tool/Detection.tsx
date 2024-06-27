@@ -141,8 +141,8 @@ export const Detection = (args: PythonArgs) => {
     const resizeCanvas = () => {
       const control_width = left_width + right_width;
       const scale_ratio = (window.innerWidth - control_width) / image_size[0];
-      setScale(Math.min(scale_ratio, 1.0))
-      Streamlit.setFrameHeight(image_size[1] * Math.min(scale_ratio, 1.0) + bottom_height);
+      setScale(Math.min(scale_ratio, 1.0));
+      Streamlit.setFrameHeight(image_size[1] * scale_ratio + bottom_height);
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas()

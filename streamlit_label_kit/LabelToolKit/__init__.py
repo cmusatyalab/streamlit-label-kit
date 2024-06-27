@@ -9,6 +9,8 @@ from pathlib import Path
 
 import streamlit.components.v1 as components
 from typing import Literal, Tuple
+from PIL import Image
+
 
 
 build_path = Path(__file__).resolve().parent.joinpath("frontend", "build")
@@ -95,3 +97,32 @@ def absolute_to_relative(
     rx1, ry1 = ax1 / image_width, ay1 / image_height
     rx2, ry2 = ax2 / image_width, ay2 / image_height
     return (rx1, ry1, rx2, ry2)
+
+def thumbnail_with_upscale(image: Image, size : Tuple[int, int]) -> Image:
+    """
+    Imitates PIL's image.thumbnail function, but supports upscaling while preserving aspect ratio
+
+    Args:
+    image (PIL.Image): The image to be resized
+    size (Tuple[int, int]): The desired target size (width, height)
+
+    Returns:
+    PIL.Image: The resized image
+    """
+    original_width, original_height = image.size
+    target_width, target_height = size
+    
+
+    aspect_ratio = original_width / original_height
+    target_aspect_ratio = target_width / target_height
+
+    if aspect_ratio > target_aspect_ratio:
+        # constrain width
+        new_width = target_width
+        new_height = int(target_width / aspect_ratio)
+    else: 
+        # constrain height
+        new_height = target_height
+        new_width = int(target_height * aspect_ratio)
+
+    return image.resize((new_width, new_height), Image.LANCZOS)
