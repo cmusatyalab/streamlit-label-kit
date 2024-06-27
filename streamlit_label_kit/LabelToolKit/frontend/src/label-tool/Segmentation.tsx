@@ -13,8 +13,8 @@ import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { BBoxCanvas, ItemList, ClassSelect, ItemInfo, SegmentCanvas, InputSlider, BrushSelector, BrushEditor} from '../components';
-import { BaseItem, Rectangle, PythonArgs, Mask} from '../utils'
+import { BBoxCanvas, ItemList, ClassSelect, ItemInfo, SegmentCanvas, InputSlider, BrushSelector, BrushEditor } from '../components';
+import { BaseItem, Rectangle, PythonArgs, Mask } from '../utils'
 import { CommmonArgs, SegmentationArgs, DevArgs } from "../utils";
 
 const _CLASS_SELECT_HEIGHT = 42 + 6;
@@ -40,7 +40,7 @@ export const Segmentation = (args: PythonArgs) => {
     item_selector_position = "right",
     ui_left_size = 0,
     ui_bottom_size = 0,
-    ui_right_size = 0,  
+    ui_right_size = 0,
     edit_description = false,
     edit_meta = false,
     auto_seg_mode = false,
@@ -65,7 +65,7 @@ export const Segmentation = (args: PythonArgs) => {
         left_item_num += 1;
       } else {
         left_height += _CLASS_SELECT_HEIGHT + _SPACE;
-      }  
+      }
       break;
     case "right":
       right_width = ui_right_size;
@@ -76,11 +76,11 @@ export const Segmentation = (args: PythonArgs) => {
       }
       break;
     case "bottom":
-      bottom_height = class_select_type === "select" ?  _CLASS_SELECT_HEIGHT + 4 : ui_bottom_size + _SPACE;
+      bottom_height = class_select_type === "select" ? _CLASS_SELECT_HEIGHT + 4 : ui_bottom_size + _SPACE;
 
       break;
   }
-  
+
   if (item_editor) {
     switch (item_editor_position) {
       case "left":
@@ -108,7 +108,7 @@ export const Segmentation = (args: PythonArgs) => {
   }
 
   left_height = Math.trunc((window.innerHeight - left_height - _SPACE * Math.max(left_item_num - 1, 0)) / (left_item_num || 1));
-  right_height = Math.trunc((window.innerHeight - right_height - _SPACE  * Math.max(right_item_num - 1, 0)) / (right_item_num || 1));
+  right_height = Math.trunc((window.innerHeight - right_height - _SPACE * Math.max(right_item_num - 1, 0)) / (right_item_num || 1));
 
   const params = new URLSearchParams(window.location.search);
   const baseUrl = params.get('streamlitUrl')
@@ -127,16 +127,16 @@ export const Segmentation = (args: PythonArgs) => {
 
   const [masks, setMasks] = useState<Mask[]>(
     masks_info.map((mask, i) => {
-    return {
-      data: mask.data,
-      width: image_size[0],
-      height: image_size[1],
-      label: mask.label,
-      id: mask.id,
-      meta: mask.meta || [],
-      additional_data: mask.additional_data || {},
-    }
-  }));
+      return {
+        data: mask.data,
+        width: image_size[0],
+        height: image_size[1],
+        label: mask.label,
+        id: mask.id,
+        meta: mask.meta || [],
+        additional_data: mask.additional_data || {},
+      }
+    }));
 
   const [scale, setScale] = useState(1.0)
   useEffect(() => {
@@ -150,7 +150,7 @@ export const Segmentation = (args: PythonArgs) => {
     resizeCanvas()
   }, [image_size, bottom_height, left_width, right_width])
 
-  const setStreamlitOutput = (masks_input: Mask[] ) => {
+  const setStreamlitOutput = (masks_input: Mask[]) => {
     const currentMask = masks_input.map((mask, i) => {
       return {
         data: mask.data,
@@ -178,7 +178,7 @@ export const Segmentation = (args: PythonArgs) => {
     setRectangles([]);
 
     Streamlit.setComponentValue({
-      "new":  currentBboxValue,
+      "new": currentBboxValue,
       "mask": currentMask,
       "key": Date.now().toString().slice(-8),
     })
@@ -186,13 +186,13 @@ export const Segmentation = (args: PythonArgs) => {
 
   useEffect(() => {
     const newMasks = masks_info.map(mask => ({
-        data: mask.data,
-        width: image_size[0],
-        height: image_size[1],
-        label: mask.label,
-        id: mask.id,
-        meta: mask.meta || [],
-        additional_data: mask.additional_data || {},
+      data: mask.data,
+      width: image_size[0],
+      height: image_size[1],
+      label: mask.label,
+      id: mask.id,
+      meta: mask.meta || [],
+      additional_data: mask.additional_data || {},
     }));
     setMasks(newMasks);
 
@@ -202,7 +202,7 @@ export const Segmentation = (args: PythonArgs) => {
         setLabel(newMasks[index].label)
         setSelectedItem(newMasks[index])
       }
-    } 
+    }
 
     // setStreamlitOutput(newMasks);
   }, [masks_info]);
@@ -228,7 +228,7 @@ export const Segmentation = (args: PythonArgs) => {
         setLabel(masks[index].label)
         setSelectedItem(masks[index])
       }
-    } 
+    }
 
     setStreamlitOutput(masks);
   };
@@ -250,7 +250,7 @@ export const Segmentation = (args: PythonArgs) => {
     let _masks = [...masks];
     let index = _masks.findIndex(rect => rect.id === id);
 
-    
+
     if (index !== -1) {
       if (_masks.length !== 1) {
         _masks.splice(index, 1)
@@ -318,10 +318,12 @@ export const Segmentation = (args: PythonArgs) => {
         for (let y = 0; y < height; y++) {
           for (let x = 0; x < width; x++) {
             if (masks[index].data[y][x]) {
-              masks.map((mask) => { mask.data[y][x] = false;});
+              masks.map((mask) => { mask.data[y][x] = false; });
               masks[index].data[y][x] = true;
-        }}}
-      }  
+            }
+          }
+        }
+      }
     }
     updateMasks(_masks);
   }
@@ -345,17 +347,17 @@ export const Segmentation = (args: PythonArgs) => {
     }
   };
 
-  const ClassSelectRender = ({ marginTop = "6px !important", width = "calc(100%)" }: { marginTop?: number | string , width?: number|string }) => {
+  const ClassSelectRender = ({ marginTop = "6px !important", width = "calc(100%)" }: { marginTop?: number | string, width?: number | string }) => {
     return (
       <Stack
-        direction = "row"
+        direction="row"
         justifyContent="center"
         alignItems="center"
         minWidth={width}
         spacing={`${_SPACE}px`}
       >
         <IconButton
-          sx={{"mt": marginTop, "border": "1px solid rgba(0, 0, 0, 0.12)", "border-radius": "4px"}}
+          sx={{ "mt": marginTop, "border": "1px solid rgba(0, 0, 0, 0.12)", "border-radius": "4px" }}
           onClick={updateMode}
           disabled={read_only}
         >
@@ -384,10 +386,10 @@ export const Segmentation = (args: PythonArgs) => {
         height={`${height}px`}
         item={selectedId != null && selectedItem ? selectedItem : undefined}
         items={masks}
-        edit = {!read_only && (mode === "display")}
+        edit={!read_only && (mode === "display")}
         displayLabel
-        displayMetaData = {edit_meta}
-        displayDescription = {!edit_meta && edit_description}
+        displayMetaData={edit_meta}
+        displayDescription={!edit_meta && edit_description}
         setItem={updateItem}
       />
     );
@@ -425,9 +427,9 @@ export const Segmentation = (args: PythonArgs) => {
           >
             {class_select_position === "left" ? <ClassSelectRender /> : null}
             {
-              (mode === "edit" || (mode === "new" && !auto_seg_mode) ) && (class_select_position === "left") ?
-                <BrushEditor value={strokeSize} setValue={setStrokeSize} shape={penShape} setShape={handleShapeChange} mode={editMode} setMode={handleEditModeChange} disabled={read_only}/>:
-                (mode === "display") || (class_select_position !== "left")? 
+              (mode === "edit" || (mode === "new" && !auto_seg_mode)) && (class_select_position === "left") ?
+                <BrushEditor value={strokeSize} setValue={setStrokeSize} shape={penShape} setShape={handleShapeChange} mode={editMode} setMode={handleEditModeChange} disabled={read_only} /> :
+                (mode === "display") || (class_select_position !== "left") ?
                   <Stack
                     direction="column"
                     justifyContent="center"
@@ -436,13 +438,13 @@ export const Segmentation = (args: PythonArgs) => {
                     width={"100%"}
                   >
                     {(item_editor && item_editor_position === "left") ? <ElementEditorRender height={left_height} /> : null}
-                    {(item_selector && item_selector_position === "left")? <ElementSelectRender height={left_height} /> : null}
+                    {(item_selector && item_selector_position === "left") ? <ElementSelectRender height={left_height} /> : null}
                   </Stack> :
                   <Typography variant="body2"> Click and drag to draw a bounding box around the target object, then click save button </Typography>
             }
           </Stack> : undefined
         }
-        
+
         <Stack
           direction="column"
           justifyContent="center"
@@ -450,7 +452,7 @@ export const Segmentation = (args: PythonArgs) => {
           spacing={`${_SPACE}px`}
           sx={{ px: "0px" }}
         >
-          {(mode === "new" && auto_seg_mode) ? 
+          {(mode === "new" && auto_seg_mode) ?
             <BBoxCanvas
               rectangles={rectangles}
               mode={'Transform'}
@@ -458,13 +460,13 @@ export const Segmentation = (args: PythonArgs) => {
               scale={scale}
               setSelectedId={setSelectedRectId}
               setRectangles={setRectangles}
-              setLabel={(e: any)=>{return}}
+              setLabel={(e: any) => { return }}
               color_map={color_map}
               label={label}
               image={image}
               image_size={image_size}
               strokeWidth={1}
-            /> : 
+            /> :
             <SegmentCanvas
               image={image}
               image_size={image_size}
@@ -481,8 +483,8 @@ export const Segmentation = (args: PythonArgs) => {
               editMode={editMode}
             />
           }
-          
-          {class_select_position === "bottom" ? 
+
+          {class_select_position === "bottom" ?
             <Stack
               direction="row"
               justifyContent="center"
@@ -490,9 +492,9 @@ export const Segmentation = (args: PythonArgs) => {
               spacing={`${_SPACE}px`}
               width={image_size[0] * scale}
             >
-              <ClassSelectRender marginTop={"0px !important"} width={`calc(${_SMALL_UI_WIDTH}px)`}/> 
-              {!auto_seg_mode ? <BrushSelector shape={penShape} setShape={handleShapeChange} mode={editMode} setMode={handleEditModeChange} disabled={mode==="display"}/> : <Typography variant="body2"> Click and drag to draw a bounding box around the target object, then click save button </Typography>}
-              {!auto_seg_mode ? <InputSlider value={strokeSize} setValue={setStrokeSize} title={"Size"} minValue={1} maxValue={50} disabled={mode==="display"} /> : null}
+              <ClassSelectRender marginTop={"0px !important"} width={`calc(${_SMALL_UI_WIDTH}px)`} />
+              {!auto_seg_mode ? <BrushSelector shape={penShape} setShape={handleShapeChange} mode={editMode} setMode={handleEditModeChange} disabled={mode === "display"} /> : <Typography variant="body2"> Click and drag to draw a bounding box around the target object, then click save button </Typography>}
+              {!auto_seg_mode ? <InputSlider value={strokeSize} setValue={setStrokeSize} title={"Size"} minValue={1} maxValue={50} disabled={mode === "display"} /> : null}
             </Stack>
             : undefined}
         </Stack>
@@ -508,9 +510,9 @@ export const Segmentation = (args: PythonArgs) => {
           >
             {class_select_position === "right" ? <ClassSelectRender /> : null}
             {
-              (mode === "edit" || (mode === "new" && !auto_seg_mode) ) && (class_select_position === "right") ?
-                <BrushEditor value={strokeSize} setValue={setStrokeSize} shape={penShape} setShape={handleShapeChange} mode={editMode} setMode={handleEditModeChange} disabled={read_only}/>:
-                (mode === "display") || (class_select_position !== "right")? 
+              (mode === "edit" || (mode === "new" && !auto_seg_mode)) && (class_select_position === "right") ?
+                <BrushEditor value={strokeSize} setValue={setStrokeSize} shape={penShape} setShape={handleShapeChange} mode={editMode} setMode={handleEditModeChange} disabled={read_only} /> :
+                (mode === "display") || (class_select_position !== "right") ?
                   <Stack
                     direction="column"
                     justifyContent="center"
@@ -519,7 +521,7 @@ export const Segmentation = (args: PythonArgs) => {
                     width={"100%"}
                   >
                     {(item_editor && item_editor_position === "right") ? <ElementEditorRender height={right_height} /> : null}
-                    {(item_selector && item_selector_position === "right")? <ElementSelectRender height={right_height} /> : null}
+                    {(item_selector && item_selector_position === "right") ? <ElementSelectRender height={right_height} /> : null}
                   </Stack> :
                   <Typography variant="body2"> Click and drag to draw a bounding box around the target object, then click save button </Typography>
             }

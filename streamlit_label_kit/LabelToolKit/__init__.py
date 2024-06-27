@@ -114,14 +114,10 @@ def thumbnail_with_upscale(image: Image, size : Tuple[int, int]) -> Image:
     
 
     aspect_ratio = original_width / original_height
-    target_aspect_ratio = target_width / target_height
+    new_width = target_width
+    new_height = int(target_width / aspect_ratio)
 
-    if aspect_ratio > target_aspect_ratio:
-        # constrain width
-        new_width = target_width
-        new_height = int(target_width / aspect_ratio)
-    else: 
-        # constrain height
+    if new_height > target_height:
         new_height = target_height
         new_width = int(target_height * aspect_ratio)
 
