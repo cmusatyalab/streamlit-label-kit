@@ -13,7 +13,7 @@ import numpy as np
 import streamlit.elements.image as st_image
 from PIL import Image
 from streamlit.components.v1.components import CustomComponent
-from . import _component_func
+from . import _component_func, thumbnail_with_upscale
 
 
 def get_colormap(label_names, colormap_name="gist_rainbow"):
@@ -119,7 +119,7 @@ def annotation(
     
     if (image_path):
         image = Image.open(image_path)
-        image.thumbnail(size=(image_width, image_height))
+        image = thumbnail_with_upscale(image, (image_width, image_height))
     
     if (not classification and not meta_editor):
         return None

@@ -29,7 +29,7 @@ export const Detection = (args: PythonArgs) => {
     item_selector_position = "right",
     ui_left_size = 0,
     ui_bottom_size = 0,
-    ui_right_size = 0,  
+    ui_right_size = 0,
     edit_description = false,
     edit_meta = false,
     read_only = false,
@@ -55,7 +55,7 @@ export const Detection = (args: PythonArgs) => {
         left_item_num += 1;
       } else {
         left_height += _CLASS_SELECT_HEIGHT + _SPACE;
-      }  
+      }
       break;
     case "right":
       right_width = ui_right_size;
@@ -66,11 +66,11 @@ export const Detection = (args: PythonArgs) => {
       }
       break;
     case "bottom":
-      bottom_height = class_select_type === "select" ?  _CLASS_SELECT_HEIGHT + 4: ui_bottom_size + _SPACE;
+      bottom_height = class_select_type === "select" ? _CLASS_SELECT_HEIGHT + 4 : ui_bottom_size + _SPACE;
 
       break;
   }
-  
+
   if (item_editor) {
     switch (item_editor_position) {
       case "left":
@@ -98,7 +98,7 @@ export const Detection = (args: PythonArgs) => {
   }
 
   left_height = Math.trunc((window.innerHeight - left_height - _SPACE * Math.max(left_item_num - 1, 0)) / (left_item_num || 1));
-  right_height = Math.trunc((window.innerHeight - right_height - _SPACE  * Math.max(right_item_num - 1, 0)) / (right_item_num || 1));
+  right_height = Math.trunc((window.innerHeight - right_height - _SPACE * Math.max(right_item_num - 1, 0)) / (right_item_num || 1));
 
   let radio_ui_height: number = ui_bottom_size;
   switch (class_select_position) {
@@ -112,7 +112,7 @@ export const Detection = (args: PythonArgs) => {
       radio_ui_height = ui_bottom_size;
       break;
   }
-  
+
   const params = new URLSearchParams(window.location.search);
   const baseUrl = params.get('streamlitUrl')
   const [image] = useImage(baseUrl + image_url)
@@ -141,7 +141,7 @@ export const Detection = (args: PythonArgs) => {
     const resizeCanvas = () => {
       const control_width = left_width + right_width;
       const scale_ratio = (window.innerWidth - control_width) / image_size[0];
-      setScale(Math.min(scale_ratio, 1.0))
+      setScale(Math.min(scale_ratio, 1.0));
       Streamlit.setFrameHeight(image_size[1] * Math.min(scale_ratio, 1.0) + bottom_height);
     }
     window.addEventListener('resize', resizeCanvas);
@@ -184,7 +184,7 @@ export const Detection = (args: PythonArgs) => {
         setLabel(rects[index].label)
         setSelectedItem(rects[index])
       }
-    } 
+    }
 
     setStreamlitOutput(rects);
   };
@@ -201,7 +201,7 @@ export const Detection = (args: PythonArgs) => {
       meta: bb.meta || [],
       additional_data: bb.additional_data || {},
     }));
-    
+
     setRectangles(newRectangles);
 
     if (selectedId !== null) {
@@ -210,7 +210,7 @@ export const Detection = (args: PythonArgs) => {
         setLabel(newRectangles[index].label)
         setSelectedItem(newRectangles[index])
       }
-    } 
+    }
 
     // setStreamlitOutput(newRectangles);
   }, [bbox_info, color_map]);
@@ -269,19 +269,19 @@ export const Detection = (args: PythonArgs) => {
     }
   };
 
-  const ClassSelectRender = ({ marginTop, width = "calc(100%)" }: { marginTop?: number | string , width?: number|string }) => {
+  const ClassSelectRender = ({ marginTop, width = "calc(100%)" }: { marginTop?: number | string, width?: number | string }) => {
     return (
-      class_select_type === "select" ? 
+      class_select_type === "select" ?
         <ClassSelect
-            width={width}
-            height="calc(100%)"
-            label={label}
-            label_list={label_list}
-            handleChange={handleClassSelectorChange}
-            title="Current Class"
-            marginTop={marginTop}
-            disabled={read_only}
-        /> : 
+          width={width}
+          height="calc(100%)"
+          label={label}
+          label_list={label_list}
+          handleChange={handleClassSelectorChange}
+          title="Current Class"
+          marginTop={marginTop}
+          disabled={read_only}
+        /> :
         <Box
           sx={{
             display: 'flex',
@@ -297,14 +297,14 @@ export const Detection = (args: PythonArgs) => {
           }}
         >
           <ClassRadio
-              vertical={class_select_position !== "bottom"}
-              width="100%"
-              height={radio_ui_height}
-              label={label}
-              label_list={label_list}
-              handleChange={handleClassSelectorChange}
-              multi={false}
-              disabled={read_only}
+            vertical={class_select_position !== "bottom"}
+            width="100%"
+            height={radio_ui_height}
+            label={label}
+            label_list={label_list}
+            handleChange={handleClassSelectorChange}
+            multi={false}
+            disabled={read_only}
           />
         </Box>
     );
@@ -317,10 +317,10 @@ export const Detection = (args: PythonArgs) => {
         height={`${height}px`}
         item={selectedId != null && selectedItem ? selectedItem : undefined}
         items={rectangles}
-        edit = {!read_only}
+        edit={!read_only}
         displayLabel
-        displayMetaData = {edit_meta}
-        displayDescription = {!edit_meta && edit_description}
+        displayMetaData={edit_meta}
+        displayDescription={!edit_meta && edit_description}
         setItem={updateItem}
       />
     );
@@ -340,11 +340,11 @@ export const Detection = (args: PythonArgs) => {
     );
   }
 
-  const RenderUi = ({pos} : {pos: "left" | "right"}) => {
+  const RenderUi = ({ pos }: { pos: "left" | "right" }) => {
     let width: number = 0;
     let height: number = 0;
 
-    switch(pos) {
+    switch (pos) {
       case "left":
         width = left_width;
         height = left_height;
@@ -366,10 +366,10 @@ export const Detection = (args: PythonArgs) => {
       >
         {class_select_position === pos ? <ClassSelectRender /> : null}
         {(item_editor && item_editor_position === pos) ? <ElementEditorRender height={height} /> : null}
-        {(item_selector && item_selector_position === pos)? <ElementSelectRender height={height} /> : null}
+        {(item_selector && item_selector_position === pos) ? <ElementSelectRender height={height} /> : null}
       </Stack>
-    ); 
-};
+    );
+  };
 
   return (
     <Box>
@@ -379,8 +379,8 @@ export const Detection = (args: PythonArgs) => {
         alignItems="start"
       >
 
-        {(left_width !== 0) ? <RenderUi pos={"left"}/> : undefined}
-        
+        {(left_width !== 0) ? <RenderUi pos={"left"} /> : undefined}
+
         <Stack
           direction="column"
           justifyContent="center"
@@ -405,12 +405,12 @@ export const Detection = (args: PythonArgs) => {
             showLabel={bbox_show_label}
             showAdditional={bbox_show_additional}
           />
-          {class_select_position === "bottom" ? <ClassSelectRender marginTop={"10px !important"} width={image_size[0] * scale}/> : undefined}
+          {class_select_position === "bottom" ? <ClassSelectRender marginTop={"10px !important"} width={image_size[0] * scale} /> : undefined}
         </Stack>
 
-        {(right_width !== 0) ? <RenderUi pos={"right"}/> : undefined}
+        {(right_width !== 0) ? <RenderUi pos={"right"} /> : undefined}
       </Stack>
-      
+
     </Box>
   )
 }

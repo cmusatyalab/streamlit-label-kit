@@ -13,7 +13,7 @@ import numpy as np
 import streamlit.elements.image as st_image
 from PIL import Image
 from streamlit.components.v1.components import CustomComponent
-from . import _component_func, convert_bbox_format, relative_to_absolute, absolute_to_relative
+from . import _component_func, convert_bbox_format, relative_to_absolute, absolute_to_relative, thumbnail_with_upscale
 
 
 def _get_colormap(label_names, colormap_name="gist_rainbow"):
@@ -155,7 +155,7 @@ def segmentation(
     # Load Image and convert size
     image = Image.open(image_path)
     original_image_size = image.size
-    image.thumbnail(size=(image_width, image_height))
+    image = thumbnail_with_upscale(image, (image_width, image_height))
 
     image_url = st_image.image_to_url(
         image,
