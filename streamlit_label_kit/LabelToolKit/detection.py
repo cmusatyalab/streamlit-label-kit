@@ -10,7 +10,7 @@ from hashlib import md5
 from typing import Literal, Union, List, Dict
 import matplotlib.pyplot as plt
 import numpy as np
-import streamlit.elements.image as st_image
+from streamlit.elements.lib.image_utils import image_to_url
 from PIL import Image
 from streamlit.components.v1.components import CustomComponent
 from . import _component_func, convert_bbox_format, relative_to_absolute, absolute_to_relative, thumbnail_with_upscale
@@ -142,7 +142,7 @@ def detection(
     original_image_size = image.size
     image = thumbnail_with_upscale(image, (image_width, image_height))
 
-    image_url = st_image.image_to_url(
+    image_url = image_to_url(
         image,
         image.size[0],
         True,

@@ -114,7 +114,7 @@ export const Detection = (args: PythonArgs) => {
   }
 
   const params = new URLSearchParams(window.location.search);
-  const baseUrl = params.get('streamlitUrl')
+  const baseUrl = new URL(params.get('streamlitUrl') || '').origin + '/'
   const [image] = useImage(baseUrl + image_url)
 
   const [rectangles, setRectangles] = React.useState<Rectangle[]>(
@@ -214,6 +214,14 @@ export const Detection = (args: PythonArgs) => {
 
     // setStreamlitOutput(newRectangles);
   }, [bbox_info, color_map]);
+
+  useEffect(() => {
+    // Auto-select first rectangle if available and nothing is selected
+    if (rectangles.length > 0 && selectedId === null) {
+      const firstRect = rectangles[0];
+      updateSelected(firstRect.id);
+    }
+  }, [rectangles]); 
 
   const updateSelected = (selected: string | null) => {
     setSelectedId(selected)
