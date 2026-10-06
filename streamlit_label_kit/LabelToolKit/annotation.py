@@ -6,13 +6,17 @@
 #
 
 from __future__ import annotations
+
 from hashlib import md5
 from typing import Literal, Union, List
+
 import matplotlib.pyplot as plt
 import numpy as np
-import streamlit.elements.image as st_image
 from PIL import Image
 from streamlit.components.v1.components import CustomComponent
+from streamlit.elements.lib.image_utils import image_to_url
+from streamlit.elements.lib.layout_utils import LayoutConfig
+
 from . import _component_func, thumbnail_with_upscale
 
 
@@ -32,7 +36,7 @@ UI_WIDTH = 168
 def _calc_size(size) :
     if isinstance(size, (int, float)):
         return size, size
-            
+
     if size == "small":
         ui_height = UI_HEIGHT
         ui_width = UI_WIDTH
@@ -45,7 +49,7 @@ def _calc_size(size) :
     else:
         ui_height = int(2 * UI_HEIGHT)
         ui_width = int(1.25 * UI_WIDTH)
-    
+
     return ui_height, ui_width
 
 def annotation(
@@ -114,20 +118,19 @@ def annotation(
         }
     """
 
-
     #WARNNING: If you are "inputing" data to "annotation", always provide appropriate value to the "meta_data" argument
-    
+
     if (image_path):
         image = Image.open(image_path)
         image = thumbnail_with_upscale(image, (image_width, image_height))
-    
+
     if (not classification and not meta_editor):
         return None
-    
+
     _class_select_pos = class_select_position or ui_position
     _meta_editor_pos = meta_editor_position or ui_position
     _edit_meta = not edit_description and meta_editor
-    
+
     _ui_height, _ui_width = _calc_size(ui_size)
     _, _left_size = _calc_size(ui_left_size or ui_size)
     _bottom_size, _ = _calc_size(ui_bottom_size or ui_size)
@@ -141,33 +144,30 @@ def annotation(
         _image_size = [0,0]
 
     else:
-        _image_url = st_image.image_to_url(
+        _image_url = image_to_url(
             image,
-            image.size[0],
+            LayoutConfig(width=image.size[0]),
             True,
             "RGB",
             "PNG",
             f"annotation-{md5(image.tobytes()).hexdigest()}-{key}",
         )
         _image_size = image.size
-        if _image_url.startswith("/"):
-            _image_url = _image_url[1:]
-            
+
         if multi_select and isinstance(label_index, list):
             _default_label_list = [label_list[i] for i in label_index]
         else:
             _default_label_list = []
-    
-    
+
     if ui_bottom_fill_width:
         _ui_width = "100vw"
-        
+
     if ui_height:
         _ui_height = ui_height
-        
+
     _justify_content = {"left": "start", "center":"center", "right":"end"}[component_alignment]
-        
-    
+
+
     component_value = _component_func(
         image_url=_image_url,
         image_size=_image_size,
@@ -178,28 +178,28 @@ def annotation(
         key=key,
         meta_info=meta_data,
         multi_select=multi_select,
-        
+
         edit_class=classification,
         edit_meta=_edit_meta,
         edit_description=meta_editor and edit_description,
-        
+
         class_select_type=_select_type,
         meta_editor=meta_editor,
-        
+
         class_select_position=_class_select_pos,
         meta_editor_position=_meta_editor_pos,
-        
+
         ui_left_size=_left_size,
         ui_bottom_size=_bottom_size,
         ui_right_size=_right_size,
-        
+
         read_only=read_only,
-        
+
         default_multi_label_list=_default_label_list,
         justify_content=_justify_content,
         label_type="annotation"
     )
-    
+
     key = 0
     label = []
     meta = []
@@ -208,6 +208,6 @@ def annotation(
         key = int(component_value["key"])
         meta = component_value["meta"]
     result = {"label": label, "meta": meta, "key": key}
-        
-    
+
+
     return result

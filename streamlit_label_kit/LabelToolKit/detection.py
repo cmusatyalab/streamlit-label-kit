@@ -6,18 +6,18 @@
 #
 
 from __future__ import annotations
+
 from hashlib import md5
 from typing import Literal, Union, List, Dict
+
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from streamlit.components.v1.components import CustomComponent
-from . import _component_func, convert_bbox_format, relative_to_absolute, absolute_to_relative, thumbnail_with_upscale
+from streamlit.elements.lib.image_utils import image_to_url
+from streamlit.elements.lib.layout_utils import LayoutConfig
 
-try:  # track API changes in streamlit 1.42.0
-  from streamlit.elements.lib.image_utils import image_to_url
-except ImportError:
-  from streamlit.elements.image import image_to_url
+from . import _component_func, convert_bbox_format, relative_to_absolute, absolute_to_relative, thumbnail_with_upscale
 
 
 def _get_colormap(label_names, colormap_name="gist_rainbow"):
@@ -148,14 +148,12 @@ def detection(
 
     image_url = image_to_url(
         image,
-        image.size[0],
+        LayoutConfig(width=image.size[0]),
         True,
         "RGB",
         "PNG",
         f"annotation-{md5(image.tobytes()).hexdigest()}-{key}",
     )
-    if image_url.startswith("/"):
-        image_url = image_url[1:]
 
     color_map = _get_colormap(label_list, colormap_name="gist_rainbow")
 

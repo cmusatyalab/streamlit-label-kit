@@ -15,7 +15,7 @@ dependencies = [
     "Pillow>=6.2.0",
     "matplotlib>=3.5.3",
     "numpy>=1",
-    "streamlit>=1.26.0",
+    "streamlit>=1.42.0",
 ]
 keywords = ["Python", "Streamlit", "React", "JavaScript"]
 classifiers = [

@@ -6,14 +6,18 @@
 #
 
 from __future__ import annotations
+
 from hashlib import md5
 from typing import Literal, Union, List, Dict
+
 import matplotlib.pyplot as plt
 import numpy as np
-import streamlit.elements.image as st_image
 from PIL import Image
 from streamlit.components.v1.components import CustomComponent
-from . import _component_func, convert_bbox_format, relative_to_absolute, absolute_to_relative, thumbnail_with_upscale
+from streamlit.elements.lib.image_utils import image_to_url
+from streamlit.elements.lib.layout_utils import LayoutConfig
+
+from . import _component_func, convert_bbox_format, absolute_to_relative, thumbnail_with_upscale
 
 
 def _get_colormap(label_names, colormap_name="gist_rainbow"):
@@ -157,16 +161,14 @@ def segmentation(
     original_image_size = image.size
     image = thumbnail_with_upscale(image, (image_width, image_height))
 
-    image_url = st_image.image_to_url(
+    image_url = image_to_url(
         image,
-        image.size[0],
+        LayoutConfig(width=image.size[0]),
         True,
         "RGB",
         "PNG",
         f"segmentation-{md5(image.tobytes()).hexdigest()}-{key}",
     )
-    if image_url.startswith("/"):
-        image_url = image_url[1:]
 
     color_map = _get_colormap(label_list, colormap_name="gist_rainbow")
 

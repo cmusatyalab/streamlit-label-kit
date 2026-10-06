@@ -114,7 +114,7 @@ export const Detection = (args: PythonArgs) => {
   }
 
   const params = new URLSearchParams(window.location.search);
-  const baseUrl = new URL(params.get('streamlitUrl') || '').origin + '/'
+  const baseUrl = new URL(params.get('streamlitUrl') || '').origin
   const [image] = useImage(baseUrl + image_url)
 
   const [rectangles, setRectangles] = React.useState<Rectangle[]>(
