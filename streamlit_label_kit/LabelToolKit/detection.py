@@ -1,7 +1,7 @@
 #
 # Streamlit components for general labeling tasks
 #
-# Copyright (c) 2024 Carnegie Mellon University
+# Copyright (c) 2024-2026 Carnegie Mellon University
 # SPDX-License-Identifier: GPL-2.0-only
 #
 

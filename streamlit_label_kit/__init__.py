@@ -1,7 +1,7 @@
 #
 # Streamlit components for general labeling tasks
 #
-# Copyright (c) 2024 Carnegie Mellon University
+# Copyright (c) 2024-2026 Carnegie Mellon University
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
@@ -10,4 +10,4 @@ from .LabelToolKit.detection import detection
 from .LabelToolKit.annotation import annotation
 from .LabelToolKit.segmentation import segmentation
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
