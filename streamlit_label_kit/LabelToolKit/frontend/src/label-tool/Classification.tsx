@@ -105,7 +105,7 @@ export const Classification = ( args : PythonArgs) => {
   }
 
   const params = new URLSearchParams(window.location.search);
-  const baseUrl = params.get('streamlitUrl')
+  const baseUrl = new URL(params.get('streamlitUrl') || '').origin
   const [image] = useImage(baseUrl + image_url)
   const [scale, setScale] = useState(1.0)
   const [label, setLabel] = useState<string>(label_list.length !== 0 ? label_list[default_label_idx] : "")

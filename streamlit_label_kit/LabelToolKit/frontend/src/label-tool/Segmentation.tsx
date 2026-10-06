@@ -111,7 +111,7 @@ export const Segmentation = (args: PythonArgs) => {
   right_height = Math.trunc((window.innerHeight - right_height - _SPACE * Math.max(right_item_num - 1, 0)) / (right_item_num || 1));
 
   const params = new URLSearchParams(window.location.search);
-  const baseUrl = params.get('streamlitUrl')
+  const baseUrl = new URL(params.get('streamlitUrl') || '').origin
   const [image] = useImage(baseUrl + image_url)
 
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
